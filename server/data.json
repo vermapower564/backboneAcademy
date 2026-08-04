@@ -1,0 +1,48 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "Student Demo",
+      "email": "student@backbone.edu",
+      "password": "password123",
+      "createdAt": "2026-08-04T05:28:40.812Z"
+    }
+  ],
+  "demoBookings": [
+    {
+      "id": 1,
+      "studentName": "Aarav Kumar",
+      "phone": "9304868696",
+      "course": "Class 5th to 10th Academics",
+      "timeSlot": "Morning (8:00 AM - 11:00 AM)",
+      "bookedAt": "2026-08-04T05:28:40.813Z"
+    }
+  ],
+  "reviews": [
+    {
+      "id": 1,
+      "name": "Rohan Sharma",
+      "course": "Class 5th to 10th Academics",
+      "rating": 5,
+      "date": "Aug 01, 2026",
+      "comment": "Rahul Verma Sir explains Mathematics & Science concepts so clearly! Scored 94% in my exams."
+    },
+    {
+      "id": 2,
+      "name": "Priya Verma",
+      "course": "DCA (Diploma in Computer Applications)",
+      "rating": 5,
+      "date": "Jul 28, 2026",
+      "comment": "The DCA computer practical classes at Pandra Ranchi campus are 100% practical. Loved MS Excel & Typing!"
+    },
+    {
+      "id": 3,
+      "name": "Amit Kumar",
+      "course": "Navodaya Entrance (JNVST) Prep",
+      "rating": 5,
+      "date": "Jul 20, 2026",
+      "comment": "The JNVST mock OMR tests and mental ability coaching at Backbone Academy helped me get selected!"
+    }
+  ],
+  "contacts": []
+}
