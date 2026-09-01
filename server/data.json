@@ -406,6 +406,36 @@
   ],
   "materials": [
     {
+      "id": 1788255256284,
+      "title": "Class 10 Maths Sample Question Paper 2026",
+      "category": "📝 Question Papers",
+      "className": "Class 10",
+      "subject": "Mathematics",
+      "description": "",
+      "fileUrl": "https://backboneacademy.in/docs/maths-sample-paper.pdf",
+      "fileType": "pdf",
+      "fileSize": "2.4 MB",
+      "uploadedBy": "Rahul Sir",
+      "status": "PUBLISHED",
+      "date": "Sep 1, 2026",
+      "createdAt": "2026-09-01T09:34:16.284Z"
+    },
+    {
+      "id": 1788255256257,
+      "title": "Class 10 Board Physics Formula Sheet",
+      "category": "📚 Subject Notes",
+      "className": "Class 10",
+      "subject": "Physics",
+      "description": "",
+      "fileUrl": "https://backboneacademy.in/docs/physics-formulas.pdf",
+      "fileType": "pdf",
+      "fileSize": "1.8 MB",
+      "uploadedBy": "Director",
+      "status": "PUBLISHED",
+      "date": "Sep 1, 2026",
+      "createdAt": "2026-09-01T09:34:16.257Z"
+    },
+    {
       "id": 1,
       "title": "Class 10 Physics - Light Reflection & Refraction Notes",
       "category": "Notes",
@@ -454,6 +484,28 @@
     }
   ],
   "auditLogs": [
+    {
+      "id": 1788255256290.6052,
+      "userId": 2,
+      "userName": "Rahul Sir",
+      "userRole": "TEACHER",
+      "action": "PUBLISH_RESOURCE",
+      "targetEntity": "materials",
+      "targetRecordId": "1788255256284",
+      "metadata": "{\"title\":\"Class 10 Maths Sample Question Paper 2026\",\"category\":\"📝 Question Papers\",\"className\":\"Class 10\"}",
+      "createdAt": "2026-09-01T09:34:16.290Z"
+    },
+    {
+      "id": 1788255256261.037,
+      "userId": 1,
+      "userName": "Director",
+      "userRole": "ADMIN",
+      "action": "PUBLISH_RESOURCE",
+      "targetEntity": "materials",
+      "targetRecordId": "1788255256257",
+      "metadata": "{\"title\":\"Class 10 Board Physics Formula Sheet\",\"category\":\"📚 Subject Notes\",\"className\":\"Class 10\"}",
+      "createdAt": "2026-09-01T09:34:16.261Z"
+    },
     {
       "id": 1788251322398.4514,
       "userId": null,

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BookOpen, Calendar, Award, FileText, CheckCircle2, Download, Bell, DollarSign, Printer } from 'lucide-react';
+import StudentResources from '../StudentResources';
 
 export default function StudentDashboard({ user, onNavigate }) {
   const [studentInfo, setStudentInfo] = useState({
@@ -117,27 +118,8 @@ export default function StudentDashboard({ user, onNavigate }) {
             </div>
           </div>
 
-          {/* Study Materials & PDFs */}
-          <div className="glass-panel" style={{ padding: '24px', borderRadius: '18px' }}>
-            <h3 style={{ fontSize: '1.2rem', fontWeight: 800, marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <FileText color="var(--brand-gold)" size={20} />
-              <span>Class Study Material & Notes</span>
-            </h3>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              {materials.map(m => (
-                <div key={m.id} style={{ padding: '12px 16px', background: 'var(--bg-glass)', borderRadius: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <div>
-                    <div style={{ fontWeight: 700, fontSize: '0.9rem' }}>{m.title}</div>
-                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Category: {m.category} | Uploaded: {m.uploadedBy}</div>
-                  </div>
-                  <button className="btn-outline" style={{ padding: '4px 10px', fontSize: '0.78rem' }} onClick={() => alert('Downloading study notes...')}>
-                    <Download size={14} /> Download
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
+          {/* Student Resources & PDF Library */}
+          <StudentResources user={user} canManage={false} />
         </div>
 
         {/* Right Column: Fees, Report Card & Timetable */}
