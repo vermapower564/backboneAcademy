@@ -3,6 +3,7 @@ import { readDB, writeDB } from '../db.js';
 import pool, { isTiDBConnected } from '../database.js';
 import { verifyRole } from '../middleware/authMiddleware.js';
 import { recordAuditLog } from '../middleware/auditLogger.js';
+import { sendFeePaymentEmail } from '../email.js';
 
 const router = express.Router();
 
@@ -75,6 +76,7 @@ router.post('/fees/payment', verifyRole(['ADMIN']), async (req, res, next) => {
       );
 
       await recordAuditLog({ req, action: 'RECORD_FEE_PAYMENT', targetEntity: 'fees', targetRecordId: feeId, metadata: { amountPaid, studentName: fee.studentName, newPending } });
+      sendFeePaymentEmail({ email: fee.email || 'aarav@backbone.edu', studentName: fee.studentName, receiptNo: fee.receiptNo, totalAmount: fee.totalAmount, paidAmount: newPaid, pendingAmount: newPending, paymentStatus: status }).catch(err => console.error('Fee email error:', err.message));
       return res.json({ success: true, message: `Payment of ₹${amountPaid} recorded successfully! Receipt generated.` });
     }
 
@@ -92,6 +94,7 @@ router.post('/fees/payment', verifyRole(['ADMIN']), async (req, res, next) => {
     writeDB(db);
 
     await recordAuditLog({ req, action: 'RECORD_FEE_PAYMENT', targetEntity: 'fees', targetRecordId: feeId, metadata: { amountPaid, studentName: fee.studentName, newPending } });
+    sendFeePaymentEmail({ email: fee.email || 'aarav@backbone.edu', studentName: fee.studentName, receiptNo: fee.receiptNo, totalAmount: fee.totalAmount, paidAmount: newPaid, pendingAmount: newPending, paymentStatus: status }).catch(err => console.error('Fee email error:', err.message));
     return res.json({ success: true, message: `Payment of ₹${amountPaid} recorded successfully! Receipt generated.`, fee: db.fees[index] });
   } catch (error) {
     next(error);

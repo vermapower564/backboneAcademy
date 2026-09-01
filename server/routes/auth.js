@@ -7,6 +7,7 @@ import { validateRegister, validateLogin } from '../middleware/validation.js';
 import { sendWelcomeEmail } from '../email.js';
 import { generateToken, verifyToken } from '../middleware/authMiddleware.js';
 import mailService from '../services/mailService.js';
+import { templatePasswordResetOTP } from '../services/emailTemplates.js';
 import { recordAuditLog } from '../middleware/auditLogger.js';
 
 const router = express.Router();
@@ -249,20 +250,8 @@ router.post('/forgot-password', async (req, res, next) => {
       writeDB(db);
     }
 
-    // Dispatch email via Nodemailer SMTP service asynchronously
-    const emailHtml = `
-      <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6; max-width: 500px; margin: 0 auto; border: 1px solid #eee; border-radius: 12px; padding: 24px;">
-        <h2 style="color: #E63946; margin-top: 0;">Password Recovery OTP</h2>
-        <p>Hello <strong>${userName}</strong>,</p>
-        <p>You have requested to reset your Backbone Academy account password.</p>
-        <div style="background: #F8FAFC; padding: 16px; text-align: center; borderRadius: 8px; margin: 20px 0; border: 1px dashed #E63946;">
-          <span style="font-size: 2.2rem; fontWeight: 900; letter-spacing: 6px; color: #E63946;">${rawOtp}</span>
-        </div>
-        <p style="font-size: 0.85rem; color: #666;">This OTP is valid for <strong>10 minutes</strong>. Do not share this code with anyone.</p>
-        <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
-        <p style="font-size: 0.78rem; color: #888;">Backbone Academy Security Desk | Pandra Ranchi</p>
-      </div>
-    `;
+    // Dispatch email via Nodemailer SMTP service asynchronously using branded template
+    const emailHtml = templatePasswordResetOTP({ name: userName, otp: rawOtp });
 
     mailService.sendEmail({
       to: cleanEmail,

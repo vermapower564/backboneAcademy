@@ -1,18 +1,19 @@
 import mailService from './services/mailService.js';
+import {
+  templatePasswordResetOTP,
+  templateRegistrationConfirmation,
+  templateAccountNotification,
+  templateFeePaymentNotification,
+  templateAdmissionEnquiryConfirmation
+} from './services/emailTemplates.js';
 
-export async function sendWelcomeEmail({ name, email }) {
+/**
+ * Send Welcome / Registration Email
+ */
+export async function sendWelcomeEmail({ name, email, studentId }) {
   if (!email) return false;
 
-  const html = `
-    <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6; max-width: 600px; margin: 0 auto; border: 1px solid #eee; border-radius: 8px; padding: 24px;">
-      <h2 style="color: #E63946; margin-top: 0;">Welcome to Backbone Academy, ${name}!</h2>
-      <p>Thank you for creating an account with Backbone Academy.</p>
-      <p>We are dedicated to providing top-quality coaching for school academics (5th-10th), JNVST entrance prep, and computer courses (DCA/ADCA/Tally Prime).</p>
-      <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
-      <p style="font-size: 0.85rem; color: #666;">Backbone Academy | Opp. Mittal Residency, Pandra Ranchi | Helpline: +91 9304868696</p>
-    </div>
-  `;
-
+  const html = templateRegistrationConfirmation({ name, email, studentId });
   const result = await mailService.sendEmail({
     to: email,
     subject: 'Welcome to Backbone Academy! 🎓',
@@ -22,20 +23,14 @@ export async function sendWelcomeEmail({ name, email }) {
   return result.success;
 }
 
+/**
+ * Send Demo Class Booking Confirmation
+ */
 export async function sendDemoBookingEmail({ studentName, phone, course, timeSlot }) {
   const adminEmail = process.env.SMTP_USER;
   if (!adminEmail) return false;
 
-  const html = `
-    <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6; max-width: 600px; margin: 0 auto; padding: 24px;">
-      <h3 style="color: #E63946;">New 3-Day Free Demo Class Reserved</h3>
-      <p><strong>Student Name:</strong> ${studentName}</p>
-      <p><strong>Phone / WhatsApp:</strong> ${phone}</p>
-      <p><strong>Course:</strong> ${course}</p>
-      <p><strong>Preferred Time Slot:</strong> ${timeSlot}</p>
-    </div>
-  `;
-
+  const html = templateAdmissionEnquiryConfirmation({ studentName, course, timeSlot, phone });
   const result = await mailService.sendEmail({
     to: adminEmail,
     subject: `🎉 New Demo Booking: ${studentName} - ${course}`,
@@ -45,24 +40,52 @@ export async function sendDemoBookingEmail({ studentName, phone, course, timeSlo
   return result.success;
 }
 
+/**
+ * Send Contact Notification
+ */
 export async function sendContactNotification({ name, email, phone, message }) {
   const adminEmail = process.env.SMTP_USER;
   if (!adminEmail) return false;
 
-  const html = `
-    <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6; max-width: 600px; margin: 0 auto; padding: 24px;">
-      <h3 style="color: #E63946;">New Website Inquiry</h3>
+  const html = templateAccountNotification({
+    name: 'Admin Desk',
+    title: `New Inquiry from ${name}`,
+    message: `
       <p><strong>Name:</strong> ${name}</p>
       <p><strong>Email:</strong> ${email || 'N/A'}</p>
       <p><strong>Phone:</strong> ${phone || 'N/A'}</p>
       <p><strong>Message:</strong></p>
-      <blockquote style="background: #f9f9f9; padding: 12px; border-left: 4px solid #E63946; margin: 0;">${message}</blockquote>
-    </div>
-  `;
+      <blockquote style="background: #FFF; padding: 12px; border-left: 3px solid #E63946;">${message}</blockquote>
+    `
+  });
 
   const result = await mailService.sendEmail({
     to: adminEmail,
-    subject: `📩 New Contact Form Inquiry from ${name}`,
+    subject: `📩 New Website Inquiry from ${name}`,
+    html
+  });
+
+  return result.success;
+}
+
+/**
+ * Send Fee Payment Receipt Email
+ */
+export async function sendFeePaymentEmail({ email, studentName, receiptNo, totalAmount, paidAmount, pendingAmount, paymentStatus }) {
+  if (!email) return false;
+
+  const html = templateFeePaymentNotification({
+    studentName,
+    receiptNo,
+    totalAmount,
+    paidAmount,
+    pendingAmount,
+    paymentStatus
+  });
+
+  const result = await mailService.sendEmail({
+    to: email,
+    subject: `🧾 Fee Payment Receipt (${receiptNo || 'REC-2026'}) - Backbone Academy`,
     html
   });
 
