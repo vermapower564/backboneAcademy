@@ -134,6 +134,9 @@ export default function App() {
               onLabClick={() => setActiveTab('lab')} 
               onOpenDemoModal={() => setIsDemoModalOpen(true)}
               onOpenShareModal={() => setIsShareModalOpen(true)}
+              onLoginSuccess={handleLoginSuccess}
+              onOpenAuth={() => setIsAuthOpen(true)}
+              user={user}
             />
 
             <div id="catalog-section">
