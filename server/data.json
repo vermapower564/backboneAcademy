@@ -1,10 +1,35 @@
 {
   "users": [
     {
+      "id": 3,
+      "name": "Aarav Kumar",
+      "email": "aarav@backbone.edu",
+      "password": "$2b$10$j0GZ/M0hU/9X4NlvdWEnwuUYknS.aeEggupFJvfMsyhdttGJdxqFW",
+      "role": "STUDENT",
+      "studentId": "STU-2026-001",
+      "createdAt": "2026-08-01T00:00:00.000Z"
+    },
+    {
+      "id": 2,
+      "name": "Rahul Verma Sir",
+      "email": "rahul@backbone.edu",
+      "password": "$2b$10$j0GZ/M0hU/9X4NlvdWEnwuUYknS.aeEggupFJvfMsyhdttGJdxqFW",
+      "role": "TEACHER",
+      "createdAt": "2026-08-01T00:00:00.000Z"
+    },
+    {
+      "id": 1,
+      "name": "Academy Director",
+      "email": "admin@backbone.edu",
+      "password": "$2b$10$j0GZ/M0hU/9X4NlvdWEnwuUYknS.aeEggupFJvfMsyhdttGJdxqFW",
+      "role": "ADMIN",
+      "createdAt": "2026-08-01T00:00:00.000Z"
+    },
+    {
       "id": 1,
       "name": "Student Demo",
       "email": "student@backbone.edu",
-      "password": "$2b$10$QhU/.mHYxnxskpjjTQvUEuSKyAKZJIT.55cuh7EnVzM/zBSNhkYjG",
+      "password": "$2b$10$NzDD5pThKUUv9xM7ToP8/O/RrtwdFf6jQGAqESw6426Sojb9nDeOy",
       "createdAt": "2026-08-04T05:28:40.812Z"
     },
     {

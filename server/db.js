@@ -9,9 +9,9 @@ const DATA_FILE = path.join(__dirname, 'data.json');
 // Default initial data structure for Backbone Academy Management System
 const initialData = {
   users: [
-    { id: 1, name: "Academy Director", email: "admin@backbone.edu", password: "$2a$10$wT4M5yM74QyE3W3T9.Zqeu.J0E.W4s5G1z8k.E0s9X.0O1A2B3C4D", role: "ADMIN", createdAt: "2026-08-01T00:00:00.000Z" },
-    { id: 2, name: "Rahul Verma Sir", email: "rahul@backbone.edu", password: "$2a$10$wT4M5yM74QyE3W3T9.Zqeu.J0E.W4s5G1z8k.E0s9X.0O1A2B3C4D", role: "TEACHER", createdAt: "2026-08-01T00:00:00.000Z" },
-    { id: 3, name: "Aarav Kumar", email: "aarav@backbone.edu", password: "$2a$10$wT4M5yM74QyE3W3T9.Zqeu.J0E.W4s5G1z8k.E0s9X.0O1A2B3C4D", role: "STUDENT", studentId: "STU-2026-001", createdAt: "2026-08-01T00:00:00.000Z" }
+    { id: 1, name: "Academy Director", email: "admin@backbone.edu", password: "$2b$10$j0GZ/M0hU/9X4NlvdWEnwuUYknS.aeEggupFJvfMsyhdttGJdxqFW", role: "ADMIN", createdAt: "2026-08-01T00:00:00.000Z" },
+    { id: 2, name: "Rahul Verma Sir", email: "rahul@backbone.edu", password: "$2b$10$j0GZ/M0hU/9X4NlvdWEnwuUYknS.aeEggupFJvfMsyhdttGJdxqFW", role: "TEACHER", createdAt: "2026-08-01T00:00:00.000Z" },
+    { id: 3, name: "Aarav Kumar", email: "aarav@backbone.edu", password: "$2b$10$j0GZ/M0hU/9X4NlvdWEnwuUYknS.aeEggupFJvfMsyhdttGJdxqFW", role: "STUDENT", studentId: "STU-2026-001", createdAt: "2026-08-01T00:00:00.000Z" }
   ],
   students: [
     { id: 1, studentId: "STU-2026-001", name: "Aarav Kumar", dob: "2012-05-14", gender: "Male", parentName: "Sanjay Kumar", mobile: "9304868696", email: "aarav@backbone.edu", address: "Pandra, Ranchi", className: "Class 10", board: "CBSE", course: "Class 5th to 10th Academics", batch: "Morning (8:00 AM - 11:00 AM)", admissionDate: "2026-04-10", status: "ACTIVE" },
