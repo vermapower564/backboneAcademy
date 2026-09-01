@@ -24,3 +24,10 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Database Backups
+server/backups/
+backups/
+*.sql
+*.json.bak
+
