@@ -1,7 +1,17 @@
 import React, { useRef } from 'react';
-import { Sun, Moon, Flame, Compass, Terminal, Award, LayoutDashboard, Trophy, Phone, Star, User, LogIn, LogOut, Laptop, Gift, UserCheck, Share2, ChevronLeft, ChevronRight, Info, Edit3, Shield, GraduationCap } from 'lucide-react';
+import { Compass, Laptop, Info, UserCheck, Edit3, Award, Star, Phone, LayoutDashboard, LogIn, LogOut, Share2, ChevronLeft, ChevronRight, User, ShieldCheck, Gift } from 'lucide-react';
 
-export default function Navbar({ activeTab, setActiveTab, theme, toggleTheme, userXP, streakDays, user, onOpenAuth, onLogout, onOpenDemoModal, onOpenShareModal }) {
+export default function Navbar({ 
+  activeTab, 
+  setActiveTab, 
+  theme, 
+  toggleTheme, 
+  user, 
+  onOpenAuth, 
+  onLogout, 
+  onOpenDemoModal, 
+  onOpenShareModal 
+}) {
   const navMenuRef = useRef(null);
 
   const scrollLeft = () => {
@@ -20,6 +30,7 @@ export default function Navbar({ activeTab, setActiveTab, theme, toggleTheme, us
 
   return (
     <header className="navbar">
+      {/* Brand Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0 }}>
         <div className="brand-container" onClick={() => setActiveTab('courses')}>
           <img src="/logo.jpg" alt="Backbone Academy Logo" className="brand-logo-img" />
@@ -34,14 +45,14 @@ export default function Navbar({ activeTab, setActiveTab, theme, toggleTheme, us
           className="btn-outline"
           style={{ padding: '6px 12px', fontSize: '0.8rem', gap: '6px', borderColor: 'var(--brand-crimson)', color: 'var(--brand-crimson)' }}
           onClick={onOpenShareModal}
-          title="Share Backbone Academy Website Link"
+          title="Share Website Link"
         >
-          <Share2 size={16} />
+          <Share2 size={15} />
           <span>Share</span>
         </button>
       </div>
 
-      {/* Smooth Horizontally Scrollable Header Navigation */}
+      {/* Public Navigation Menu */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flex: 1, minWidth: 0, justifyContent: 'center' }}>
         <button 
           onClick={scrollLeft} 
@@ -60,7 +71,16 @@ export default function Navbar({ activeTab, setActiveTab, theme, toggleTheme, us
                 onClick={() => setActiveTab('courses')}
               >
                 <Compass size={17} />
-                <span>School Courses</span>
+                <span>Home</span>
+              </button>
+            </li>
+            <li>
+              <button 
+                className={`nav-link ${activeTab === 'about' ? 'active' : ''}`}
+                onClick={() => setActiveTab('about')}
+              >
+                <Info size={17} />
+                <span>About</span>
               </button>
             </li>
             <li>
@@ -70,16 +90,7 @@ export default function Navbar({ activeTab, setActiveTab, theme, toggleTheme, us
                 style={{ color: activeTab === 'computer' ? '#06B6D4' : undefined }}
               >
                 <Laptop size={17} color={activeTab === 'computer' ? '#06B6D4' : undefined} />
-                <span>Computer Classes</span>
-              </button>
-            </li>
-            <li>
-              <button 
-                className={`nav-link ${activeTab === 'about' ? 'active' : ''}`}
-                onClick={() => setActiveTab('about')}
-              >
-                <Info size={17} />
-                <span>About Us</span>
+                <span>Courses</span>
               </button>
             </li>
             <li>
@@ -88,7 +99,7 @@ export default function Navbar({ activeTab, setActiveTab, theme, toggleTheme, us
                 onClick={() => setActiveTab('faculty')}
               >
                 <UserCheck size={17} />
-                <span>Faculty</span>
+                <span>Why Us</span>
               </button>
             </li>
             <li>
@@ -97,35 +108,7 @@ export default function Navbar({ activeTab, setActiveTab, theme, toggleTheme, us
                 onClick={() => setActiveTab('admission')}
               >
                 <Edit3 size={17} />
-                <span>Admission Enquiry</span>
-              </button>
-            </li>
-            <li>
-              <button 
-                className={`nav-link ${activeTab === 'lab' ? 'active' : ''}`}
-                onClick={() => setActiveTab('lab')}
-              >
-                <Terminal size={17} />
-                <span>Practice Lab</span>
-              </button>
-            </li>
-            <li>
-              <button 
-                className={`nav-link ${activeTab === 'certificates' ? 'active' : ''}`}
-                onClick={() => setActiveTab('certificates')}
-                style={{ color: activeTab === 'certificates' ? 'var(--brand-crimson)' : undefined }}
-              >
-                <Award size={17} color={activeTab === 'certificates' ? 'var(--brand-crimson)' : undefined} />
-                <span>Certificates</span>
-              </button>
-            </li>
-            <li>
-              <button 
-                className={`nav-link ${activeTab === 'reviews' ? 'active' : ''}`}
-                onClick={() => setActiveTab('reviews')}
-              >
-                <Star size={17} />
-                <span>Reviews</span>
+                <span>Admission</span>
               </button>
             </li>
             <li>
@@ -134,19 +117,23 @@ export default function Navbar({ activeTab, setActiveTab, theme, toggleTheme, us
                 onClick={() => setActiveTab('contact')}
               >
                 <Phone size={17} />
-                <span>Contact Us</span>
+                <span>Contact</span>
               </button>
             </li>
-            <li>
-              <button 
-                className={`nav-link ${activeTab === 'dashboard' || activeTab === 'portal' ? 'active' : ''}`}
-                onClick={() => setActiveTab(user ? 'portal' : 'dashboard')}
-                style={{ color: 'var(--brand-gold)' }}
-              >
-                <LayoutDashboard size={17} color="var(--brand-gold)" />
-                <span>{userRole === 'ADMIN' ? 'Admin Portal' : userRole === 'TEACHER' ? 'Faculty Portal' : 'Student Portal'}</span>
-              </button>
-            </li>
+
+            {/* Authenticated Portal Link if logged in */}
+            {user && (
+              <li>
+                <button 
+                  className={`nav-link ${activeTab === 'dashboard' || activeTab === 'portal' ? 'active' : ''}`}
+                  onClick={() => setActiveTab('portal')}
+                  style={{ color: 'var(--brand-gold)', fontWeight: 800 }}
+                >
+                  <LayoutDashboard size={17} color="var(--brand-gold)" />
+                  <span>{userRole === 'ADMIN' ? 'Admin Portal' : userRole === 'TEACHER' ? 'Faculty Portal' : 'Student Portal'}</span>
+                </button>
+              </li>
+            )}
           </ul>
         </div>
 
@@ -160,6 +147,7 @@ export default function Navbar({ activeTab, setActiveTab, theme, toggleTheme, us
         </button>
       </div>
 
+      {/* Right Header Actions */}
       <div className="nav-actions" style={{ flexShrink: 0 }}>
         {/* 3 Free Demo Classes Offer Button */}
         <button 
@@ -171,16 +159,6 @@ export default function Navbar({ activeTab, setActiveTab, theme, toggleTheme, us
           <span>3 Free Demo Classes</span>
         </button>
 
-        <div className="user-badge" title="Daily streak & earned XP">
-          <span className="streak-counter">
-            <Flame size={16} fill="#FFB703" color="#FFB703" />
-            {streakDays}d
-          </span>
-          <span style={{ fontSize: '0.8rem', color: 'var(--brand-crimson)', fontWeight: 700 }}>
-            {userXP} XP
-          </span>
-        </div>
-
         {user ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <span style={{ fontSize: '0.75rem', padding: '3px 8px', borderRadius: '12px', background: userRole === 'ADMIN' ? 'rgba(230,57,70,0.2)' : userRole === 'TEACHER' ? 'rgba(255,183,3,0.2)' : 'rgba(34,197,94,0.2)', color: userRole === 'ADMIN' ? 'var(--brand-crimson)' : userRole === 'TEACHER' ? 'var(--brand-gold)' : '#4ADE80', fontWeight: 800 }}>
@@ -190,7 +168,7 @@ export default function Navbar({ activeTab, setActiveTab, theme, toggleTheme, us
               className="btn-outline" 
               style={{ padding: '6px 12px', fontSize: '0.82rem', gap: '6px' }}
               onClick={onLogout}
-              title="Logged in - Click to Sign Out"
+              title="Click to Sign Out"
             >
               <User size={15} color="var(--brand-crimson)" />
               <span>{user.name}</span>
@@ -201,20 +179,12 @@ export default function Navbar({ activeTab, setActiveTab, theme, toggleTheme, us
           <button 
             className="btn-crimson" 
             style={{ padding: '6px 14px', fontSize: '0.82rem' }}
-            onClick={onOpenAuth}
+            onClick={() => onOpenAuth('LOGIN')}
           >
             <LogIn size={15} />
-            <span>Login / Register</span>
+            <span>Student Login</span>
           </button>
         )}
-
-        <button 
-          className="theme-toggle-btn" 
-          onClick={toggleTheme}
-          title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Mode`}
-        >
-          {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
-        </button>
       </div>
     </header>
   );

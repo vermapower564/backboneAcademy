@@ -26,6 +26,7 @@ import FAQSection from './components/FAQSection';
 import StudentHallOfFame from './components/StudentHallOfFame';
 import StudentCertificatesFolder from './components/StudentCertificatesFolder';
 import Footer from './components/Footer';
+import PublicLandingPage from './components/PublicLandingPage';
 import { Gift, Bell, PhoneCall } from 'lucide-react';
 import './App.css';
 
@@ -131,36 +132,14 @@ export default function App() {
 
       <main className="main-wrapper" style={{ flex: 1 }}>
         {activeTab === 'courses' && (
-          <>
-            <Hero 
-              onExploreClick={() => {
-                const el = document.getElementById('catalog-section');
-                if (el) el.scrollIntoView({ behavior: 'smooth' });
-              }} 
-              onLabClick={() => setActiveTab('lab')} 
-              onOpenDemoModal={() => setIsDemoModalOpen(true)}
-              onOpenShareModal={() => setIsShareModalOpen(true)}
-              onLoginSuccess={handleLoginSuccess}
-              onOpenAuth={handleOpenAuth}
-              user={user}
-            />
-
-            <div id="catalog-section">
-              <CourseCatalog 
-                onSelectCourse={(course) => setSelectedCourseModal(course)} 
-                enrolledCourses={enrolledCourses} 
-                onEnroll={handleEnrollCourse} 
-              />
-            </div>
-
-            <div style={{ marginTop: '40px' }}>
-              <FacultySection onOpenDemoModal={() => setIsDemoModalOpen(true)} />
-            </div>
-
-            <StudentHallOfFame />
-
-            <FAQSection />
-          </>
+          <PublicLandingPage 
+            onOpenAuth={handleOpenAuth}
+            onOpenDemoModal={() => setIsDemoModalOpen(true)}
+            onOpenShareModal={() => setIsShareModalOpen(true)}
+            onLoginSuccess={handleLoginSuccess}
+            user={user}
+            onNavigate={setActiveTab}
+          />
         )}
 
         {activeTab === 'computer' && (
