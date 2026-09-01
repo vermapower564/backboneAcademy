@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X, CheckCircle2, Phone, User, Gift, Send } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { API_BASE_URL } from '../apiConfig.js';
 
 export default function DemoClassModal({ isOpen, onClose }) {
   const [studentName, setStudentName] = useState('');
@@ -19,7 +20,7 @@ export default function DemoClassModal({ isOpen, onClose }) {
     setLoading(true);
     try {
       // Send real API request to Backend Server
-      const res = await fetch('http://localhost:5000/api/demo-booking', {
+      const res = await fetch(`${API_BASE_URL}/api/demo-booking`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ studentName, phone, course, timeSlot })

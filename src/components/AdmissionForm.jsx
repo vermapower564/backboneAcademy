@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Send, CheckCircle2, User, Phone, Mail, MapPin, BookOpen, AlertCircle } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { API_BASE_URL } from '../apiConfig.js';
 
 export default function AdmissionForm() {
   const [formData, setFormData] = useState({
@@ -33,7 +34,7 @@ export default function AdmissionForm() {
     setLoading(true);
 
     try {
-      const res = await fetch('http://localhost:5000/api/contact', {
+      const res = await fetch(`${API_BASE_URL}/api/contact`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

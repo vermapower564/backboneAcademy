@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { GraduationCap, Calendar, BookOpen, Plus, CheckCircle2, FileText, Send } from 'lucide-react';
+import { API_BASE_URL } from '../../apiConfig.js';
 
 export default function TeacherDashboard({ user }) {
   const [teacherInfo, setTeacherInfo] = useState({
@@ -29,7 +30,7 @@ export default function TeacherDashboard({ user }) {
   };
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/students', { headers: getHeaders() })
+    fetch(`${API_BASE_URL}/api/students`, { headers: getHeaders() })
       .then(r => r.json())
       .then(d => { if (d?.students) setStudents(d.students); })
       .catch(err => console.error(err));
@@ -44,7 +45,7 @@ export default function TeacherDashboard({ user }) {
     if (records.length === 0) return alert('Please mark at least one student status.');
 
     try {
-      const res = await fetch('http://localhost:5000/api/attendance', {
+      const res = await fetch(`${API_BASE_URL}/api/attendance`, {
         method: 'POST',
         headers: getHeaders(),
         body: JSON.stringify({ date: attDate, className: attClass, records, markedBy: teacherInfo.name })
@@ -62,7 +63,7 @@ export default function TeacherDashboard({ user }) {
   const handlePublishAssignment = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch('http://localhost:5000/api/assignments', {
+      const res = await fetch(`${API_BASE_URL}/api/assignments`, {
         method: 'POST',
         headers: getHeaders(),
         body: JSON.stringify({ ...assignment, createdBy: teacherInfo.name })

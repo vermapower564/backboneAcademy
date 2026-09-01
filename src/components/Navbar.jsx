@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Compass, Laptop, Info, UserCheck, Edit3, Award, Star, Phone, LayoutDashboard, LogIn, LogOut, Share2, ChevronLeft, ChevronRight, User, ShieldCheck, Gift, Bell } from 'lucide-react';
 import NotificationCenter from './NotificationCenter';
+import { API_BASE_URL } from '../apiConfig.js';
 
 export default function Navbar({ 
   activeTab, 
@@ -26,7 +27,7 @@ export default function Navbar({
         if (user.studentId) headers['x-student-id'] = user.studentId;
       }
 
-      fetch('http://localhost:5000/api/notifications', { headers })
+      fetch(`${API_BASE_URL}/api/notifications`, { headers })
         .then(r => r.json())
         .then(d => { if (d?.unreadCount !== undefined) setUnreadCount(d.unreadCount); })
         .catch(err => console.error(err));

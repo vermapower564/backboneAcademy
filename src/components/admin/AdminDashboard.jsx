@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Users, GraduationCap, Calendar, DollarSign, BookOpen, Bell, FileText, Download, Plus, Search, Filter, CheckCircle2, AlertCircle, Printer, Eye, Edit, Trash2 } from 'lucide-react';
+import { API_BASE_URL } from '../../apiConfig.js';
 
 export default function AdminDashboard({ user }) {
   const [activeTab, setActiveTab] = useState('overview');
@@ -56,15 +57,15 @@ export default function AdminDashboard({ user }) {
     try {
       const headers = getHeaders();
       const [sumRes, stuRes, tchRes, feeRes, attRes, exRes, asRes, matRes, annRes] = await Promise.all([
-        fetch('http://localhost:5000/api/reports/summary', { headers }).then(r => r.json()).catch(() => null),
-        fetch('http://localhost:5000/api/students', { headers }).then(r => r.json()).catch(() => null),
-        fetch('http://localhost:5000/api/teachers', { headers }).then(r => r.json()).catch(() => null),
-        fetch('http://localhost:5000/api/fees', { headers }).then(r => r.json()).catch(() => null),
-        fetch('http://localhost:5000/api/attendance', { headers }).then(r => r.json()).catch(() => null),
-        fetch('http://localhost:5000/api/exams/results', { headers }).then(r => r.json()).catch(() => null),
-        fetch('http://localhost:5000/api/assignments', { headers }).then(r => r.json()).catch(() => null),
-        fetch('http://localhost:5000/api/materials', { headers }).then(r => r.json()).catch(() => null),
-        fetch('http://localhost:5000/api/announcements', { headers }).then(r => r.json()).catch(() => null)
+        fetch(`${API_BASE_URL}/api/reports/summary`, { headers }).then(r => r.json()).catch(() => null),
+        fetch(`${API_BASE_URL}/api/students`, { headers }).then(r => r.json()).catch(() => null),
+        fetch(`${API_BASE_URL}/api/teachers`, { headers }).then(r => r.json()).catch(() => null),
+        fetch(`${API_BASE_URL}/api/fees`, { headers }).then(r => r.json()).catch(() => null),
+        fetch(`${API_BASE_URL}/api/attendance`, { headers }).then(r => r.json()).catch(() => null),
+        fetch(`${API_BASE_URL}/api/exams/results`, { headers }).then(r => r.json()).catch(() => null),
+        fetch(`${API_BASE_URL}/api/assignments`, { headers }).then(r => r.json()).catch(() => null),
+        fetch(`${API_BASE_URL}/api/materials`, { headers }).then(r => r.json()).catch(() => null),
+        fetch(`${API_BASE_URL}/api/announcements`, { headers }).then(r => r.json()).catch(() => null)
       ]);
 
       if (sumRes?.summary) setSummary(sumRes.summary);
@@ -77,7 +78,7 @@ export default function AdminDashboard({ user }) {
       if (matRes?.materials) setMaterials(matRes.materials);
       if (annRes?.announcements) setAnnouncements(annRes.announcements);
     } catch (err) {
-      console.error('Fetch Admin Data Error:', err);
+      console.error('Error fetching admin dashboard data:', err);
     }
   };
 
@@ -85,7 +86,7 @@ export default function AdminDashboard({ user }) {
   const handleAddStudent = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch('http://localhost:5000/api/students', {
+      const res = await fetch(`${API_BASE_URL}/api/students`, {
         method: 'POST',
         headers: getHeaders(),
         body: JSON.stringify(newStudent)
@@ -93,7 +94,6 @@ export default function AdminDashboard({ user }) {
       const data = await res.json();
       if (data.success) {
         setShowAddStudentModal(false);
-        setNewStudent({ name: '', parentName: '', mobile: '', email: '', className: 'Class 10', board: 'CBSE', course: 'Class 5th to 10th Academics' });
         fetchData();
       }
     } catch (err) {
@@ -105,7 +105,7 @@ export default function AdminDashboard({ user }) {
   const handleAddTeacher = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch('http://localhost:5000/api/teachers', {
+      const res = await fetch(`${API_BASE_URL}/api/teachers`, {
         method: 'POST',
         headers: getHeaders(),
         body: JSON.stringify(newTeacher)
@@ -113,7 +113,6 @@ export default function AdminDashboard({ user }) {
       const data = await res.json();
       if (data.success) {
         setShowAddTeacherModal(false);
-        setNewTeacher({ name: '', mobile: '', email: '', subjects: 'Mathematics, Science', classes: 'Class 9, Class 10' });
         fetchData();
       }
     } catch (err) {
@@ -127,10 +126,14 @@ export default function AdminDashboard({ user }) {
     if (!selectedFeeRecord || !paymentAmount) return;
 
     try {
-      const res = await fetch('http://localhost:5000/api/fees/payment', {
+      const res = await fetch(`${API_BASE_URL}/api/fees/payment`, {
         method: 'POST',
         headers: getHeaders(),
-        body: JSON.stringify({ feeId: selectedFeeRecord.id, amountPaid: paymentAmount })
+        body: JSON.stringify({
+          studentId: selectedFeeRecord.studentId,
+          amountPaid: Number(paymentAmount),
+          paymentMode: 'Cash'
+        })
       });
       const data = await res.json();
       if (data.success) {
@@ -144,16 +147,15 @@ export default function AdminDashboard({ user }) {
   };
 
   // Mark Attendance Handler
-  const handleMarkAttendance = async (studentId, status) => {
+  const handleSaveAttendance = async (records) => {
     try {
-      await fetch('http://localhost:5000/api/attendance', {
+      await fetch(`${API_BASE_URL}/api/attendance`, {
         method: 'POST',
         headers: getHeaders(),
         body: JSON.stringify({
           date: attDate,
           className: attClass,
-          records: [{ studentId, status }],
-          markedBy: 'Admin Director'
+          records
         })
       });
       fetchData();
@@ -163,17 +165,16 @@ export default function AdminDashboard({ user }) {
   };
 
   // Submit Marks Handler
-  const handleSubmitMarks = async (e) => {
+  const handleSaveMarks = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch('http://localhost:5000/api/exams/results', {
+      const res = await fetch(`${API_BASE_URL}/api/exams/results`, {
         method: 'POST',
         headers: getHeaders(),
         body: JSON.stringify(marksEntry)
       });
       const data = await res.json();
       if (data.success) {
-        alert(data.message);
         fetchData();
       }
     } catch (err) {
@@ -185,7 +186,7 @@ export default function AdminDashboard({ user }) {
   const handlePublishNotice = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch('http://localhost:5000/api/announcements', {
+      const res = await fetch(`${API_BASE_URL}/api/announcements`, {
         method: 'POST',
         headers: getHeaders(),
         body: JSON.stringify(newNotice)

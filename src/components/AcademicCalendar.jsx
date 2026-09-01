@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Plus, Clock, MapPin, Tag, Filter, CheckCircle2, AlertCircle, Trash2, Edit3, X, Eye } from 'lucide-react';
+import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Plus, Trash2, Tag, Clock, MapPin, CheckCircle, AlertCircle, X, ShieldAlert, Sparkles, Filter } from 'lucide-react';
+import { API_BASE_URL } from '../apiConfig.js';
 
 export default function AcademicCalendar({ user, canManage = false }) {
   const [events, setEvents] = useState([]);
@@ -74,7 +75,7 @@ export default function AcademicCalendar({ user, canManage = false }) {
     setLoading(true);
     setErrorMsg('');
     try {
-      let url = `http://localhost:5000/api/calendar?`;
+      let url = `${API_BASE_URL}/api/calendar?`;
       const params = new URLSearchParams();
       if (selectedClass && selectedClass !== 'All Classes') params.append('className', selectedClass);
       if (selectedType && selectedType !== 'All') params.append('eventType', selectedType);
@@ -106,7 +107,7 @@ export default function AcademicCalendar({ user, canManage = false }) {
     }
 
     try {
-      const response = await fetch('http://localhost:5000/api/calendar', {
+      const response = await fetch(`${API_BASE_URL}/api/calendar`, {
         method: 'POST',
         headers: getHeaders(),
         body: JSON.stringify(newEvent)
@@ -119,14 +120,15 @@ export default function AcademicCalendar({ user, canManage = false }) {
         setNewEvent({
           title: '',
           description: '',
-          eventDate: '2026-09-15',
-          startTime: '10:00 AM',
-          endTime: '01:00 PM',
+          eventDate: '',
+          startTime: '',
+          endTime: '',
           eventType: '🌴 Holiday',
           targetClass: 'All Classes',
-          status: 'PUBLISHED'
+          isPublished: true
         });
         fetchEvents();
+        setTimeout(() => setSuccessMsg(''), 3000);
       } else {
         setErrorMsg(data.message || 'Failed to publish event.');
       }
@@ -139,7 +141,7 @@ export default function AcademicCalendar({ user, canManage = false }) {
   const handleDeleteEvent = async (eventId) => {
     if (!window.confirm('Are you sure you want to remove this event from the calendar?')) return;
     try {
-      const response = await fetch(`http://localhost:5000/api/calendar/${eventId}`, {
+      const response = await fetch(`${API_BASE_URL}/api/calendar/${eventId}`, {
         method: 'DELETE',
         headers: getHeaders()
       });

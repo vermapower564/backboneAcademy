@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BookOpen, Calendar, Award, FileText, CheckCircle2, Download, Bell, DollarSign, Printer, TrendingUp, Check, AlertCircle, Sparkles, Clock, ShieldCheck } from 'lucide-react';
+import { API_BASE_URL } from '../../apiConfig.js';
 import StudentResources from '../StudentResources';
 import AcademicCalendar from '../AcademicCalendar';
 
@@ -60,13 +61,13 @@ export default function StudentDashboard({ user, onNavigate }) {
       const currentStudentId = user?.studentId || studentInfo.studentId;
 
       const [stRes, attRes, asRes, matRes, exRes, feeRes, notifRes] = await Promise.all([
-        fetch(`http://localhost:5000/api/students?studentId=${currentStudentId}`, { headers }).then(r => r.json()).catch(() => null),
-        fetch(`http://localhost:5000/api/attendance?studentId=${currentStudentId}`, { headers }).then(r => r.json()).catch(() => null),
-        fetch('http://localhost:5000/api/assignments?className=Class 10', { headers }).then(r => r.json()).catch(() => null),
-        fetch('http://localhost:5000/api/materials?className=Class 10', { headers }).then(r => r.json()).catch(() => null),
-        fetch(`http://localhost:5000/api/exams/results?studentId=${currentStudentId}`, { headers }).then(r => r.json()).catch(() => null),
-        fetch(`http://localhost:5000/api/fees?studentId=${currentStudentId}`, { headers }).then(r => r.json()).catch(() => null),
-        fetch('http://localhost:5000/api/notifications', { headers }).then(r => r.json()).catch(() => null)
+        fetch(`${API_BASE_URL}/api/students?studentId=${currentStudentId}`, { headers }).then(r => r.json()).catch(() => null),
+        fetch(`${API_BASE_URL}/api/attendance?studentId=${currentStudentId}`, { headers }).then(r => r.json()).catch(() => null),
+        fetch(`${API_BASE_URL}/api/assignments?className=Class 10`, { headers }).then(r => r.json()).catch(() => null),
+        fetch(`${API_BASE_URL}/api/materials?className=Class 10`, { headers }).then(r => r.json()).catch(() => null),
+        fetch(`${API_BASE_URL}/api/exams/results?studentId=${currentStudentId}`, { headers }).then(r => r.json()).catch(() => null),
+        fetch(`${API_BASE_URL}/api/fees?studentId=${currentStudentId}`, { headers }).then(r => r.json()).catch(() => null),
+        fetch(`${API_BASE_URL}/api/notifications`, { headers }).then(r => r.json()).catch(() => null)
       ]);
 
       if (stRes?.students && stRes.students.length > 0) {

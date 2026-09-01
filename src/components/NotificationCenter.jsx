@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Bell, Check, CheckCheck, FileText, BookOpen, Calendar, DollarSign, MessageSquare, AlertCircle, Plus, X, RefreshCw, Volume2, ShieldCheck } from 'lucide-react';
+import { API_BASE_URL } from '../apiConfig.js';
 
 export default function NotificationCenter({ user, isDropdown = false, onClose }) {
   const [notifications, setNotifications] = useState([]);
@@ -60,7 +61,7 @@ export default function NotificationCenter({ user, isDropdown = false, onClose }
   const fetchNotifications = async () => {
     setLoading(true);
     try {
-      let url = `http://localhost:5000/api/notifications?`;
+      let url = `${API_BASE_URL}/api/notifications?`;
       if (selectedType && selectedType !== 'All') url += `type=${encodeURIComponent(selectedType)}`;
 
       const response = await fetch(url, { headers: getHeaders() });
@@ -83,7 +84,7 @@ export default function NotificationCenter({ user, isDropdown = false, onClose }
   // Mark single notification as read
   const handleMarkAsRead = async (notifId) => {
     try {
-      await fetch(`http://localhost:5000/api/notifications/${notifId}/read`, {
+      await fetch(`${API_BASE_URL}/api/notifications/${notifId}/read`, {
         method: 'PUT',
         headers: getHeaders()
       });
@@ -98,7 +99,7 @@ export default function NotificationCenter({ user, isDropdown = false, onClose }
   // Mark all notifications as read
   const handleMarkAllAsRead = async () => {
     try {
-      await fetch('http://localhost:5000/api/notifications/read-all', {
+      await fetch(`${API_BASE_URL}/api/notifications/read-all`, {
         method: 'PUT',
         headers: getHeaders()
       });
@@ -116,7 +117,7 @@ export default function NotificationCenter({ user, isDropdown = false, onClose }
     if (!newNotif.title || !newNotif.message) return;
 
     try {
-      const response = await fetch('http://localhost:5000/api/notifications', {
+      const response = await fetch(`${API_BASE_URL}/api/notifications`, {
         method: 'POST',
         headers: getHeaders(),
         body: JSON.stringify(newNotif)

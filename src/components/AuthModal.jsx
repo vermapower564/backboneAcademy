@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, Mail, Lock, User, LogIn, UserPlus, CheckCircle, AlertCircle, Phone, Eye, EyeOff, KeyRound, ArrowLeft, ShieldCheck } from 'lucide-react';
+import { API_BASE_URL } from '../apiConfig.js';
 
 export default function AuthModal({ isOpen, onClose, onLoginSuccess, initialMode = 'LOGIN' }) {
   // Modes: 'LOGIN', 'REGISTER', 'FORGOT_1' (Email), 'FORGOT_2' (OTP), 'FORGOT_3' (New Password)
@@ -77,7 +78,7 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess, initialMode
     setLoading(true);
 
     try {
-      const res = await fetch('http://localhost:5000/api/auth/forgot-password', {
+      const res = await fetch(`${API_BASE_URL}/api/auth/forgot-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email })
@@ -112,7 +113,7 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess, initialMode
     setLoading(true);
 
     try {
-      const res = await fetch('http://localhost:5000/api/auth/verify-otp', {
+      const res = await fetch(`${API_BASE_URL}/api/auth/verify-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, otp: otpCode })
@@ -156,7 +157,7 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess, initialMode
     setLoading(true);
 
     try {
-      const res = await fetch('http://localhost:5000/api/auth/reset-password', {
+      const res = await fetch(`${API_BASE_URL}/api/auth/reset-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, resetToken, newPassword: password })
@@ -215,7 +216,7 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess, initialMode
 
     setLoading(true);
 
-    const endpoint = modalMode === 'LOGIN' ? 'http://localhost:5000/api/auth/login' : 'http://localhost:5000/api/auth/register';
+    const endpoint = modalMode === 'LOGIN' ? `${API_BASE_URL}/api/auth/login` : `${API_BASE_URL}/api/auth/register`;
     const bodyData = modalMode === 'LOGIN' 
       ? { email, password } 
       : { name, email, password, mobile, programType, className, batch, role: 'STUDENT' };

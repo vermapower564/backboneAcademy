@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FileText, Search, Filter, Download, Eye, Plus, Trash2, Edit3, CheckCircle2, AlertCircle, Calendar, BookOpen, UserCheck, ShieldCheck, X } from 'lucide-react';
+import { API_BASE_URL } from '../apiConfig.js';
 
 export default function StudentResources({ user, canManage = false }) {
   const [materials, setMaterials] = useState([]);
@@ -101,7 +102,7 @@ export default function StudentResources({ user, canManage = false }) {
     setLoading(true);
     setErrorMsg('');
     try {
-      let url = `http://localhost:5000/api/materials?`;
+      let url = `${API_BASE_URL}/api/materials?`;
       const params = new URLSearchParams();
 
       if (selectedCategory && selectedCategory !== 'All') params.append('category', selectedCategory);
@@ -136,7 +137,7 @@ export default function StudentResources({ user, canManage = false }) {
     }
 
     try {
-      const response = await fetch('http://localhost:5000/api/materials', {
+      const response = await fetch(`${API_BASE_URL}/api/materials`, {
         method: 'POST',
         headers: getHeaders(),
         body: JSON.stringify(newDoc)
@@ -169,7 +170,7 @@ export default function StudentResources({ user, canManage = false }) {
   const handleTogglePublish = async (docId, currentStatus) => {
     const newStatus = currentStatus === 'PUBLISHED' ? 'UNPUBLISHED' : 'PUBLISHED';
     try {
-      const response = await fetch(`http://localhost:5000/api/materials/${docId}`, {
+      const response = await fetch(`${API_BASE_URL}/api/materials/${docId}`, {
         method: 'PUT',
         headers: getHeaders(),
         body: JSON.stringify({ status: newStatus })
@@ -190,7 +191,7 @@ export default function StudentResources({ user, canManage = false }) {
   const handleDeleteDoc = async (docId) => {
     if (!window.confirm('Are you sure you want to delete this document?')) return;
     try {
-      const response = await fetch(`http://localhost:5000/api/materials/${docId}`, {
+      const response = await fetch(`${API_BASE_URL}/api/materials/${docId}`, {
         method: 'DELETE',
         headers: getHeaders()
       });
