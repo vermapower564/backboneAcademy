@@ -8,11 +8,12 @@ const JWT_SECRET = process.env.JWT_SECRET || 'backbone-academy-sec-key-2026-xyz'
  */
 export function generateToken(user) {
   const payload = {
-    id: user.id,
-    name: user.name,
+    id: user.id || null,
+    name: user.name || '',
     email: user.email,
     role: (user.role || 'STUDENT').toUpperCase(),
     studentId: user.studentId || null,
+    type: user.type || 'AUTH',
     iat: Date.now(),
     exp: Date.now() + (24 * 60 * 60 * 1000) // 24 hours validity
   };

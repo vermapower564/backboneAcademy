@@ -66,7 +66,8 @@ const initialData = {
     { id: 2, name: "Priya Verma", course: "DCA (Diploma in Computer Applications)", rating: 5, date: "Jul 28, 2026", comment: "The DCA computer practical classes at Pandra Ranchi campus are 100% practical. Loved MS Excel & Typing!" },
     { id: 3, name: "Amit Kumar", course: "Navodaya Entrance (JNVST) Prep", rating: 5, date: "Jul 20, 2026", comment: "The JNVST mock OMR tests and mental ability coaching at Backbone Academy helped me get selected!" }
   ],
-  contacts: []
+  contacts: [],
+  passwordResets: []
 };
 
 // Initialize JSON database if it doesn't exist or update missing keys

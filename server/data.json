@@ -4,7 +4,7 @@
       "id": 1,
       "name": "Student Demo",
       "email": "student@backbone.edu",
-      "password": "password123",
+      "password": "$2b$10$QhU/.mHYxnxskpjjTQvUEuSKyAKZJIT.55cuh7EnVzM/zBSNhkYjG",
       "createdAt": "2026-08-04T05:28:40.812Z"
     },
     {
@@ -430,6 +430,28 @@
   ],
   "auditLogs": [
     {
+      "id": 1788251322398.4514,
+      "userId": null,
+      "userName": "System",
+      "userRole": "GUEST",
+      "action": "PASSWORD_RESET",
+      "targetEntity": "users",
+      "targetRecordId": "student@backbone.edu",
+      "metadata": "{\"email\":\"student@backbone.edu\"}",
+      "createdAt": "2026-09-01T08:28:42.398Z"
+    },
+    {
+      "id": 1788251322203.0579,
+      "userId": null,
+      "userName": "System",
+      "userRole": "GUEST",
+      "action": "PASSWORD_RESET",
+      "targetEntity": "users",
+      "targetRecordId": "student@backbone.edu",
+      "metadata": "{\"email\":\"student@backbone.edu\"}",
+      "createdAt": "2026-09-01T08:28:42.203Z"
+    },
+    {
       "id": 1788249673576.0088,
       "userId": 1,
       "userName": "Academy Director",
@@ -440,5 +462,6 @@
       "metadata": "{\"name\":\"Audit Test Student\",\"className\":\"Class 10\",\"mobile\":\"9999988888\"}",
       "createdAt": "2026-09-01T08:01:13.576Z"
     }
-  ]
+  ],
+  "passwordResets": []
 }
