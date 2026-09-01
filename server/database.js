@@ -393,6 +393,26 @@ const TABLE_DEFINITIONS = [
         INDEX idx_reset_email (email)
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `
+  },
+  {
+    name: 'calendar_events',
+    query: `
+      CREATE TABLE IF NOT EXISTS calendar_events (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        title VARCHAR(255) NOT NULL,
+        description TEXT,
+        eventDate VARCHAR(50) NOT NULL,
+        startTime VARCHAR(50),
+        endTime VARCHAR(50),
+        eventType VARCHAR(100) DEFAULT 'Academy Event',
+        targetClass VARCHAR(100) DEFAULT 'All Classes',
+        status VARCHAR(50) DEFAULT 'PUBLISHED',
+        createdBy VARCHAR(255),
+        createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+        INDEX idx_event_date (eventDate),
+        INDEX idx_event_class (targetClass)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    `
   }
 ];
 

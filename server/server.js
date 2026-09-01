@@ -19,6 +19,7 @@ import assignmentsRouter from './routes/assignments.js';
 import announcementsRouter from './routes/announcements.js';
 import reportsRouter from './routes/reports.js';
 import materialsRouter from './routes/materials.js';
+import calendarRouter from './routes/calendar.js';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -76,6 +77,7 @@ app.use('/api', assignmentsRouter);
 app.use('/api', announcementsRouter);
 app.use('/api', reportsRouter);
 app.use('/api', materialsRouter);
+app.use('/api', calendarRouter);
 
 // Centralized Error Handling Middleware (Hides stack traces and DB internals from users)
 app.use((err, req, res, next) => {

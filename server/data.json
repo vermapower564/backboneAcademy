@@ -485,6 +485,17 @@
   ],
   "auditLogs": [
     {
+      "id": 1788256614401.4019,
+      "userId": 1,
+      "userName": "Director",
+      "userRole": "ADMIN",
+      "action": "CREATE_CALENDAR_EVENT",
+      "targetEntity": "calendar_events",
+      "targetRecordId": "1788256614396",
+      "metadata": "{\"title\":\"🌴 Gandhi Jayanti Holiday\",\"eventDate\":\"2026-10-02\",\"targetClass\":\"All Classes\"}",
+      "createdAt": "2026-09-01T09:56:54.401Z"
+    },
+    {
       "id": 1788255256290.6052,
       "userId": 2,
       "userName": "Rahul Sir",
@@ -540,5 +551,59 @@
       "createdAt": "2026-09-01T08:01:13.576Z"
     }
   ],
-  "passwordResets": []
+  "passwordResets": [],
+  "calendarEvents": [
+    {
+      "id": 1,
+      "title": "🌴 Teacher's Day Academy Celebration & Holiday",
+      "description": "Special event and afternoon holiday for Teacher's Day celebration.",
+      "eventDate": "2026-09-05",
+      "startTime": "10:00 AM",
+      "endTime": "01:00 PM",
+      "eventType": "🌴 Holiday",
+      "targetClass": "All Classes",
+      "status": "PUBLISHED",
+      "createdBy": "Academy Director",
+      "createdAt": "2026-08-25T00:00:00.000Z"
+    },
+    {
+      "id": 2,
+      "title": "📝 Class 10 Mid-Term Mathematics Board Exam",
+      "description": "Mid-term comprehensive exam covering Algebra & Geometry chapters.",
+      "eventDate": "2026-09-12",
+      "startTime": "09:00 AM",
+      "endTime": "12:00 PM",
+      "eventType": "📝 Exam",
+      "targetClass": "Class 10",
+      "status": "PUBLISHED",
+      "createdBy": "Rahul Verma Sir",
+      "createdAt": "2026-08-28T00:00:00.000Z"
+    },
+    {
+      "id": 3,
+      "title": "👨‍👩‍👧 Parent-Teacher Meeting (PTM)",
+      "description": "Discussion on mid-term performance and individual progress cards.",
+      "eventDate": "2026-09-20",
+      "startTime": "10:00 AM",
+      "endTime": "02:00 PM",
+      "eventType": "👨‍👩‍👧 Parent Meeting",
+      "targetClass": "Class 10",
+      "status": "PUBLISHED",
+      "createdBy": "Academy Director",
+      "createdAt": "2026-08-30T00:00:00.000Z"
+    },
+    {
+      "id": 1788256614396,
+      "title": "🌴 Gandhi Jayanti Holiday",
+      "description": "Official national holiday - Academy closed.",
+      "eventDate": "2026-10-02",
+      "startTime": "",
+      "endTime": "",
+      "eventType": "🌴 Holiday",
+      "targetClass": "All Classes",
+      "status": "PUBLISHED",
+      "createdBy": "Director",
+      "createdAt": "2026-09-01T09:56:54.396Z"
+    }
+  ]
 }

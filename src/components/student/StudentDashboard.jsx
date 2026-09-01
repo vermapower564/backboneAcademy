@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BookOpen, Calendar, Award, FileText, CheckCircle2, Download, Bell, DollarSign, Printer } from 'lucide-react';
 import StudentResources from '../StudentResources';
+import AcademicCalendar from '../AcademicCalendar';
 
 export default function StudentDashboard({ user, onNavigate }) {
   const [studentInfo, setStudentInfo] = useState({
@@ -120,6 +121,9 @@ export default function StudentDashboard({ user, onNavigate }) {
 
           {/* Student Resources & PDF Library */}
           <StudentResources user={user} canManage={false} />
+
+          {/* Academic Calendar & Schedule */}
+          <AcademicCalendar user={user} canManage={false} />
         </div>
 
         {/* Right Column: Fees, Report Card & Timetable */}

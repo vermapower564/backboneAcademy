@@ -67,7 +67,48 @@ const initialData = {
     { id: 3, name: "Amit Kumar", course: "Navodaya Entrance (JNVST) Prep", rating: 5, date: "Jul 20, 2026", comment: "The JNVST mock OMR tests and mental ability coaching at Backbone Academy helped me get selected!" }
   ],
   contacts: [],
-  passwordResets: []
+  passwordResets: [],
+  calendarEvents: [
+    {
+      id: 1,
+      title: "🌴 Teacher's Day Academy Celebration & Holiday",
+      description: "Special event and afternoon holiday for Teacher's Day celebration.",
+      eventDate: "2026-09-05",
+      startTime: "10:00 AM",
+      endTime: "01:00 PM",
+      eventType: "🌴 Holiday",
+      targetClass: "All Classes",
+      status: "PUBLISHED",
+      createdBy: "Academy Director",
+      createdAt: "2026-08-25T00:00:00.000Z"
+    },
+    {
+      id: 2,
+      title: "📝 Class 10 Mid-Term Mathematics Board Exam",
+      description: "Mid-term comprehensive exam covering Algebra & Geometry chapters.",
+      eventDate: "2026-09-12",
+      startTime: "09:00 AM",
+      endTime: "12:00 PM",
+      eventType: "📝 Exam",
+      targetClass: "Class 10",
+      status: "PUBLISHED",
+      createdBy: "Rahul Verma Sir",
+      createdAt: "2026-08-28T00:00:00.000Z"
+    },
+    {
+      id: 3,
+      title: "👨‍👩‍👧 Parent-Teacher Meeting (PTM)",
+      description: "Discussion on mid-term performance and individual progress cards.",
+      eventDate: "2026-09-20",
+      startTime: "10:00 AM",
+      endTime: "02:00 PM",
+      eventType: "👨‍👩‍👧 Parent Meeting",
+      targetClass: "Class 10",
+      status: "PUBLISHED",
+      createdBy: "Academy Director",
+      createdAt: "2026-08-30T00:00:00.000Z"
+    }
+  ]
 };
 
 // Initialize JSON database if it doesn't exist or update missing keys
