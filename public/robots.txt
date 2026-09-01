@@ -1,0 +1,20 @@
+# Robots.txt for Backbone Academy — https://backboneacademy.in/
+User-agent: *
+Allow: /
+Allow: /#courses
+Allow: /#about
+Allow: /#contact
+Allow: /logo.jpg
+
+# Protect Private Management Portals, Dashboards & APIs from Search Engine Indexing
+Disallow: /api/
+Disallow: /admin/
+Disallow: /teacher/
+Disallow: /student/
+Disallow: /portal/
+Disallow: /dashboard/
+Disallow: /login
+Disallow: /auth/
+
+# Sitemap Location
+Sitemap: https://backboneacademy.in/sitemap.xml
