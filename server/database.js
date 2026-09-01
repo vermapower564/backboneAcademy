@@ -132,6 +132,7 @@ const TABLE_DEFINITIONS = [
         mobile VARCHAR(50),
         email VARCHAR(255),
         address TEXT,
+        programType VARCHAR(50) DEFAULT 'SCHOOL_CLASS',
         className VARCHAR(100),
         board VARCHAR(100),
         course VARCHAR(255),
@@ -140,6 +141,7 @@ const TABLE_DEFINITIONS = [
         status VARCHAR(50) DEFAULT 'ACTIVE',
         createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
         INDEX idx_students_class (className),
+        INDEX idx_students_program (programType),
         INDEX idx_students_mobile (mobile)
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `

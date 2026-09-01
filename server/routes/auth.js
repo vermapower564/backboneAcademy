@@ -26,10 +26,13 @@ function hashOTP(otp) {
  * 🔐 POST /api/auth/register
  */
 router.post('/register', validateRegister, async (req, res, next) => {
-  const { name, email, password, mobile, className } = req.body;
+  const { name, email, password, mobile, programType, className, batch } = req.body;
   // Public registration is strictly locked to STUDENT role for security
   const userRole = 'STUDENT';
   const studentId = `STU-2026-${Math.floor(100 + Math.random() * 900)}`;
+  const pType = programType || 'SCHOOL_CLASS';
+  const cls = className || 'Class 10';
+  const bch = batch || 'Morning (8:00 AM - 11:00 AM)';
 
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -47,6 +50,12 @@ router.post('/register', validateRegister, async (req, res, next) => {
       );
 
       userId = result.insertId;
+
+      await pool.query(
+        `INSERT INTO students (studentId, name, mobile, email, programType, className, batch, status)
+         VALUES (?, ?, ?, ?, ?, ?, ?, 'ACTIVE')`,
+        [studentId, name, mobile || '', email, pType, cls, bch]
+      );
     } else {
       const db = readDB();
       const existingUser = db.users.find(u => u.email.toLowerCase() === email.toLowerCase());
@@ -65,11 +74,25 @@ router.post('/register', validateRegister, async (req, res, next) => {
         createdAt: new Date().toISOString()
       };
 
+      if (!db.students) db.students = [];
+      db.students.push({
+        id: Date.now(),
+        studentId,
+        name,
+        mobile: mobile || '',
+        email,
+        programType: pType,
+        className: cls,
+        batch: bch,
+        status: 'ACTIVE',
+        admissionDate: new Date().toISOString().split('T')[0]
+      });
+
       db.users.push(newUser);
       writeDB(db);
     }
 
-    const userData = { id: userId, name, email, role: userRole, studentId };
+    const userData = { id: userId, name, email, role: userRole, studentId, programType: pType, className: cls, batch: bch };
     const token = generateToken(userData);
 
     // Async trigger welcome email

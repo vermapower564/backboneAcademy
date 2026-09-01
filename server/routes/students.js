@@ -8,9 +8,9 @@ import { getTeacherAssignedClasses } from '../services/teacherService.js';
 
 const router = express.Router();
 
-// GET /api/students - List students (RBAC, Class Separation & Data Privacy enforced)
+// GET /api/students - List students (RBAC, Program Separation & Privacy enforced)
 router.get('/students', async (req, res, next) => {
-  const { search, className, board, status } = req.query;
+  const { search, programType, className, board, batch, status } = req.query;
   const userRole = (req.user?.role || 'GUEST').toUpperCase();
   const verifiedStudentId = req.user?.studentId;
   const userEmail = req.user?.email;
@@ -22,7 +22,7 @@ router.get('/students', async (req, res, next) => {
       if (className && !teacherAssignedClasses.includes(className)) {
         return res.status(403).json({
           success: false,
-          message: `Access denied. You are only authorized to access assigned classes: ${teacherAssignedClasses.join(', ')}`
+          message: `Access denied. You are only authorized to access assigned programs/classes: ${teacherAssignedClasses.join(', ')}`
         });
       }
     }
@@ -31,19 +31,21 @@ router.get('/students', async (req, res, next) => {
       let query = 'SELECT * FROM students WHERE 1=1';
       const params = [];
 
-      // Enforce cryptographic data privacy: Students can ONLY query their own verified record
       if (userRole === 'STUDENT' && verifiedStudentId) {
         query += ' AND studentId = ?';
         params.push(verifiedStudentId);
       } else if (userRole === 'ADMIN') {
+        if (programType) { query += ' AND programType = ?'; params.push(programType); }
         if (className) { query += ' AND className = ?'; params.push(className); }
         if (board) { query += ' AND board = ?'; params.push(board); }
+        if (batch) { query += ' AND batch LIKE ?'; params.push(`%${batch}%`); }
         if (status) { query += ' AND status = ?'; params.push(status); }
         if (search) {
-          query += ' AND (name LIKE ? OR studentId LIKE ? OR mobile LIKE ?)';
-          params.push(`%${search}%`, `%${search}%`, `%${search}%`);
+          query += ' AND (name LIKE ? OR studentId LIKE ? OR mobile LIKE ? OR className LIKE ?)';
+          params.push(`%${search}%`, `%${search}%`, `%${search}%`, `%${search}%`);
         }
       } else if (userRole === 'TEACHER') {
+        if (programType) { query += ' AND programType = ?'; params.push(programType); }
         if (className) {
           query += ' AND className = ?';
           params.push(className);
@@ -52,6 +54,7 @@ router.get('/students', async (req, res, next) => {
           params.push(...teacherAssignedClasses);
         }
         if (board) { query += ' AND board = ?'; params.push(board); }
+        if (batch) { query += ' AND batch LIKE ?'; params.push(`%${batch}%`); }
         if (status) { query += ' AND status = ?'; params.push(status); }
         if (search) {
           query += ' AND (name LIKE ? OR studentId LIKE ? OR mobile LIKE ?)';
@@ -72,24 +75,29 @@ router.get('/students', async (req, res, next) => {
     if (userRole === 'STUDENT' && verifiedStudentId) {
       result = result.filter(s => s.studentId === verifiedStudentId);
     } else if (userRole === 'ADMIN') {
+      if (programType) result = result.filter(s => s.programType === programType);
       if (className) result = result.filter(s => s.className === className);
       if (board) result = result.filter(s => s.board === board);
+      if (batch) result = result.filter(s => (s.batch || '').toLowerCase().includes(batch.toLowerCase()));
       if (status) result = result.filter(s => s.status === status);
       if (search) {
         const q = search.toLowerCase();
         result = result.filter(s =>
           s.name.toLowerCase().includes(q) ||
           s.studentId.toLowerCase().includes(q) ||
-          s.mobile.includes(q)
+          s.mobile.includes(q) ||
+          s.className.toLowerCase().includes(q)
         );
       }
     } else if (userRole === 'TEACHER') {
+      if (programType) result = result.filter(s => s.programType === programType);
       if (className) {
         result = result.filter(s => s.className === className);
       } else if (teacherAssignedClasses.length > 0) {
         result = result.filter(s => teacherAssignedClasses.includes(s.className));
       }
       if (board) result = result.filter(s => s.board === board);
+      if (batch) result = result.filter(s => (s.batch || '').toLowerCase().includes(batch.toLowerCase()));
       if (status) result = result.filter(s => s.status === status);
       if (search) {
         const q = search.toLowerCase();

@@ -34,28 +34,38 @@ export default function StudentResources({ user, canManage = false }) {
   const categories = [
     'All',
     '📚 Subject Notes',
+    '💻 Practical Files',
+    '📘 Study PDFs',
+    '📑 GST Materials',
     '📖 Syllabus',
     '📝 Question Papers',
     '📅 Holiday List',
     '🗓️ Exam Schedule',
     '📢 Important Notices',
-    '📘 Study Materials',
     '📄 Other Academic Documents'
   ];
 
-  const classes = [
-    'All',
+  const schoolClasses = [
+    'All School Classes',
     'Class 5',
     'Class 6',
     'Class 7',
     'Class 8',
     'Class 9',
-    'Class 10',
-    'ADCA Computer Diploma'
+    'Class 10'
+  ];
+
+  const computerCourses = [
+    'All Computer Courses',
+    'ADCA',
+    'DCA',
+    'DTP',
+    'Tally Prime GST',
+    'Typing'
   ];
 
   const subjects = [
-    'All',
+    'All Subjects & Modules',
     'Mathematics',
     'Science',
     'Physics',
@@ -63,8 +73,13 @@ export default function StudentResources({ user, canManage = false }) {
     'Biology',
     'English',
     'Social Science',
-    'Computer Applications',
-    'Tally Prime GST'
+    'Computer Fundamentals',
+    'MS Excel & Word',
+    'C++ Programming',
+    'Tally Accounting',
+    'GST Vouchers',
+    'Photoshop & CorelDraw',
+    'Touch Typing'
   ];
 
   const getHeaders = () => {

@@ -20,7 +20,9 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess, initialMode
   const [confirmPassword, setConfirmPassword] = useState('');
   const [name, setName] = useState('');
   const [mobile, setMobile] = useState('');
+  const [programType, setProgramType] = useState('SCHOOL_CLASS');
   const [className, setClassName] = useState('Class 10');
+  const [batch, setBatch] = useState('Morning (8:00 AM - 11:00 AM)');
 
   // OTP & Reset States
   const [otpCode, setOtpCode] = useState('');
@@ -216,7 +218,7 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess, initialMode
     const endpoint = modalMode === 'LOGIN' ? 'http://localhost:5000/api/auth/login' : 'http://localhost:5000/api/auth/register';
     const bodyData = modalMode === 'LOGIN' 
       ? { email, password } 
-      : { name, email, password, mobile, className, role: 'STUDENT' };
+      : { name, email, password, mobile, programType, className, batch, role: 'STUDENT' };
 
     try {
       const res = await fetch(endpoint, {
@@ -387,7 +389,30 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess, initialMode
                       </div>
 
                       <div>
-                        <label style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-secondary)' }}>Class / Course *</label>
+                        <label style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-secondary)' }}>Program Type *</label>
+                        <div style={{ position: 'relative', marginTop: '3px' }}>
+                          <select
+                            value={programType}
+                            onChange={(e) => {
+                              const p = e.target.value;
+                              setProgramType(p);
+                              setClassName(p === 'SCHOOL_CLASS' ? 'Class 10' : 'ADCA');
+                            }}
+                            className="search-input"
+                            style={{ height: '38px', fontSize: '0.82rem', background: 'var(--bg-secondary)' }}
+                          >
+                            <option value="SCHOOL_CLASS">🏫 School Class (Class 5-10)</option>
+                            <option value="COMPUTER_COURSE">💻 Computer Course (Diploma/Cert)</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                      <div>
+                        <label style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-secondary)' }}>
+                          {programType === 'SCHOOL_CLASS' ? 'School Class *' : 'Computer Course *'}
+                        </label>
                         <div style={{ position: 'relative', marginTop: '3px' }}>
                           <select
                             value={className}
@@ -395,12 +420,40 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess, initialMode
                             className="search-input"
                             style={{ height: '38px', fontSize: '0.82rem', background: 'var(--bg-secondary)' }}
                           >
-                            <option value="Class 10">Class 10 CBSE/ICSE</option>
-                            <option value="Class 9">Class 9 CBSE/ICSE</option>
-                            <option value="Class 8">Class 8</option>
-                            <option value="Class 5">JNVST Navodaya Prep</option>
-                            <option value="ADCA Computer Diploma">ADCA Computer</option>
-                            <option value="DCA Computer Course">DCA Computer</option>
+                            {programType === 'SCHOOL_CLASS' ? (
+                              <>
+                                <option value="Class 5">Class 5</option>
+                                <option value="Class 6">Class 6</option>
+                                <option value="Class 7">Class 7</option>
+                                <option value="Class 8">Class 8</option>
+                                <option value="Class 9">Class 9</option>
+                                <option value="Class 10">Class 10</option>
+                              </>
+                            ) : (
+                              <>
+                                <option value="ADCA">ADCA (Advanced Diploma)</option>
+                                <option value="DCA">DCA (Diploma Computer)</option>
+                                <option value="DTP">DTP (Desktop Publishing)</option>
+                                <option value="Tally Prime GST">Tally Prime GST</option>
+                                <option value="Typing">Typing (Touch Typing)</option>
+                              </>
+                            )}
+                          </select>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-secondary)' }}>Preferred Batch *</label>
+                        <div style={{ position: 'relative', marginTop: '3px' }}>
+                          <select
+                            value={batch}
+                            onChange={(e) => setBatch(e.target.value)}
+                            className="search-input"
+                            style={{ height: '38px', fontSize: '0.82rem', background: 'var(--bg-secondary)' }}
+                          >
+                            <option value="Morning (8:00 AM - 11:00 AM)">Morning (8-11 AM)</option>
+                            <option value="Afternoon (12:00 PM - 3:00 PM)">Afternoon (12-3 PM)</option>
+                            <option value="Evening (4:00 PM - 7:00 PM)">Evening (4-7 PM)</option>
                           </select>
                         </div>
                       </div>

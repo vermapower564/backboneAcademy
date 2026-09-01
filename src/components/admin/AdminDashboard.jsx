@@ -16,6 +16,7 @@ export default function AdminDashboard({ user }) {
   const [materials, setMaterials] = useState([]);
   const [announcements, setAnnouncements] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedProgramFilter, setSelectedProgramFilter] = useState('All Programs');
 
   // Modals & Active Selections
   const [showAddStudentModal, setShowAddStudentModal] = useState(false);
@@ -343,19 +344,44 @@ export default function AdminDashboard({ user }) {
             </div>
           </div>
 
-          {/* Class Hierarchy Filter Tabs */}
+          {/* Program Hierarchy Filter Tabs */}
           <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '16px' }}>
-            {['All Classes', 'Class 5', 'Class 6', 'Class 7', 'Class 8', 'Class 9', 'Class 10', 'ADCA Computer Diploma'].map(cls => {
-              const count = cls === 'All Classes' ? students.length : students.filter(s => s.className === cls).length;
-              const isActive = (cls === 'All Classes' && !searchQuery) || searchQuery === cls;
+            {['All Programs', 'SCHOOL_CLASS', 'COMPUTER_COURSE'].map(prog => (
+              <button
+                key={prog}
+                onClick={() => setSelectedProgramFilter(prog)}
+                style={{
+                  padding: '6px 14px',
+                  borderRadius: '16px',
+                  fontSize: '0.78rem',
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                  border: selectedProgramFilter === prog ? '1px solid var(--brand-crimson)' : '1px solid var(--border-color)',
+                  background: selectedProgramFilter === prog ? 'rgba(230,57,70,0.18)' : 'var(--bg-glass)',
+                  color: selectedProgramFilter === prog ? 'var(--brand-crimson)' : 'var(--text-primary)'
+                }}
+              >
+                {prog === 'All Programs' ? '🌐 All Programs' : prog === 'SCHOOL_CLASS' ? '🏫 School Classes (5-10)' : '💻 Computer Courses'}
+              </button>
+            ))}
+          </div>
+
+          {/* Class & Course Buttons */}
+          <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '16px' }}>
+            {(selectedProgramFilter === 'COMPUTER_COURSE'
+              ? ['All Courses', 'ADCA', 'DCA', 'DTP', 'Tally Prime GST', 'Typing']
+              : ['All Classes', 'Class 5', 'Class 6', 'Class 7', 'Class 8', 'Class 9', 'Class 10', 'ADCA', 'DCA', 'DTP', 'Tally Prime GST', 'Typing']
+            ).map(cls => {
+              const count = cls.startsWith('All') ? students.length : students.filter(s => s.className === cls).length;
+              const isActive = (cls.startsWith('All') && !searchQuery) || searchQuery === cls;
               return (
                 <button
                   key={cls}
-                  onClick={() => setSearchQuery(cls === 'All Classes' ? '' : cls)}
+                  onClick={() => setSearchQuery(cls.startsWith('All') ? '' : cls)}
                   style={{
-                    padding: '6px 14px',
-                    borderRadius: '16px',
-                    fontSize: '0.78rem',
+                    padding: '5px 12px',
+                    borderRadius: '14px',
+                    fontSize: '0.76rem',
                     fontWeight: 700,
                     cursor: 'pointer',
                     border: isActive ? '1px solid var(--brand-crimson)' : '1px solid var(--border-color)',

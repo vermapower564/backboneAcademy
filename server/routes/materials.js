@@ -33,12 +33,14 @@ router.get('/materials', async (req, res, next) => {
       let query = 'SELECT * FROM materials WHERE 1=1';
       const params = [];
 
-      // Privacy rule for students: Only published documents matching their class or "All Classes"
+      // Privacy rule for students: Only published documents matching their assigned class/course or "All Classes"
       if (userRole === 'STUDENT') {
         query += ' AND (status = "PUBLISHED" OR status IS NULL)';
         if (studentClass) {
-          query += ' AND (className = ? OR className = "All Classes" OR className IS NULL OR className = "")';
+          query += ' AND (className = ? OR className = "All Classes" OR className = "All")';
           params.push(studentClass);
+        } else {
+          query += ' AND (className = "All Classes" OR className = "All")';
         }
       } else if (status) {
         query += ' AND status = ?';
@@ -78,7 +80,7 @@ router.get('/materials', async (req, res, next) => {
     if (userRole === 'STUDENT') {
       materials = materials.filter(m => 
         (m.status === 'PUBLISHED' || !m.status) &&
-        (!studentClass || !m.className || m.className === 'All Classes' || m.className === studentClass)
+        (m.className === 'All Classes' || m.className === 'All' || (studentClass && m.className === studentClass))
       );
     } else if (status) {
       materials = materials.filter(m => m.status === status);
