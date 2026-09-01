@@ -17,9 +17,10 @@ function isBcryptHash(str) {
  * 🔐 POST /api/auth/register
  */
 router.post('/register', validateRegister, async (req, res, next) => {
-  const { name, email, password, role } = req.body;
-  const userRole = (role && ['ADMIN', 'TEACHER', 'STUDENT'].includes(role.toUpperCase())) ? role.toUpperCase() : 'STUDENT';
-  const studentId = userRole === 'STUDENT' ? `STU-2026-${Math.floor(100 + Math.random() * 900)}` : null;
+  const { name, email, password, mobile, className } = req.body;
+  // Public registration is strictly locked to STUDENT role for security
+  const userRole = 'STUDENT';
+  const studentId = `STU-2026-${Math.floor(100 + Math.random() * 900)}`;
 
   try {
     const hashedPassword = await bcrypt.hash(password, 10);

@@ -13,6 +13,15 @@
       "email": "teststudent@backbone.edu",
       "password": "$2b$10$zNL9a/PARFMOPkG3uHCHVuEYes3OG8R5QetR6dNYlRfUYtrBLJj2.",
       "createdAt": "2026-08-31T11:19:13.417Z"
+    },
+    {
+      "id": 1788251164341,
+      "name": "Test Student",
+      "email": "teststudent_1788251163828@backbone.edu",
+      "password": "$2b$10$b29KzYy3ftPv5BoJJBoMfuBepI/xMWr43XoBlUenFNWc5Uh5KxOPm",
+      "role": "STUDENT",
+      "studentId": "STU-2026-284",
+      "createdAt": "2026-09-01T08:26:04.348Z"
     }
   ],
   "demoBookings": [
