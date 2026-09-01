@@ -4,15 +4,29 @@ import pool, { isTiDBConnected } from '../database.js';
 import { verifyRole } from '../middleware/authMiddleware.js';
 import { recordAuditLog } from '../middleware/auditLogger.js';
 
+import { getTeacherAssignedClasses } from '../services/teacherService.js';
+
 const router = express.Router();
 
-// GET /api/attendance - Query attendance (Cryptographic Data Isolation)
+// GET /api/attendance - Query attendance (Cryptographic Data Isolation & Class Boundary Enforced)
 router.get('/attendance', async (req, res, next) => {
   const { date, className, studentId } = req.query;
   const userRole = (req.user?.role || 'GUEST').toUpperCase();
   const verifiedStudentId = req.user?.studentId;
+  const userEmail = req.user?.email;
 
   try {
+    let teacherAssignedClasses = [];
+    if (userRole === 'TEACHER') {
+      teacherAssignedClasses = await getTeacherAssignedClasses(userEmail, req.user?.id);
+      if (className && !teacherAssignedClasses.includes(className)) {
+        return res.status(403).json({
+          success: false,
+          message: `Access denied. You are only authorized to access attendance for assigned classes: ${teacherAssignedClasses.join(', ')}`
+        });
+      }
+    }
+
     if (isTiDBConnected) {
       let query = 'SELECT * FROM attendance WHERE 1=1';
       const params = [];
@@ -20,9 +34,19 @@ router.get('/attendance', async (req, res, next) => {
       if (userRole === 'STUDENT' && verifiedStudentId) {
         query += ' AND studentId = ?';
         params.push(verifiedStudentId);
-      } else if (userRole === 'ADMIN' || userRole === 'TEACHER') {
+      } else if (userRole === 'ADMIN') {
         if (date) { query += ' AND date = ?'; params.push(date); }
         if (className) { query += ' AND className = ?'; params.push(className); }
+        if (studentId) { query += ' AND studentId = ?'; params.push(studentId); }
+      } else if (userRole === 'TEACHER') {
+        if (date) { query += ' AND date = ?'; params.push(date); }
+        if (className) {
+          query += ' AND className = ?';
+          params.push(className);
+        } else if (teacherAssignedClasses.length > 0) {
+          query += ` AND className IN (${teacherAssignedClasses.map(() => '?').join(',')})`;
+          params.push(...teacherAssignedClasses);
+        }
         if (studentId) { query += ' AND studentId = ?'; params.push(studentId); }
       } else {
         return res.status(403).json({ success: false, message: 'Access denied.' });
@@ -37,9 +61,17 @@ router.get('/attendance', async (req, res, next) => {
 
     if (userRole === 'STUDENT' && verifiedStudentId) {
       result = result.filter(a => a.studentId === verifiedStudentId);
-    } else if (userRole === 'ADMIN' || userRole === 'TEACHER') {
+    } else if (userRole === 'ADMIN') {
       if (date) result = result.filter(a => a.date === date);
       if (className) result = result.filter(a => a.className === className);
+      if (studentId) result = result.filter(a => a.studentId === studentId);
+    } else if (userRole === 'TEACHER') {
+      if (date) result = result.filter(a => a.date === date);
+      if (className) {
+        result = result.filter(a => a.className === className);
+      } else if (teacherAssignedClasses.length > 0) {
+        result = result.filter(a => teacherAssignedClasses.includes(a.className));
+      }
       if (studentId) result = result.filter(a => a.studentId === studentId);
     } else {
       return res.status(403).json({ success: false, message: 'Access denied.' });

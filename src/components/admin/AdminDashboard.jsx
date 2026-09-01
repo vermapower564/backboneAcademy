@@ -326,18 +326,47 @@ export default function AdminDashboard({ user }) {
       {activeTab === 'overview' && (
         <div className="glass-panel" style={{ padding: '24px', borderRadius: '20px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px', flexWrap: 'wrap', gap: '12px' }}>
-            <h3 style={{ fontSize: '1.2rem', fontWeight: 800 }}>Registered Students Roster ({students.length})</h3>
+            <div>
+              <h3 style={{ fontSize: '1.2rem', fontWeight: 800 }}>Class-Wise Student Directory ({students.length})</h3>
+              <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '2px' }}>Filter students by class hierarchy and inspect individual student records.</p>
+            </div>
             <div style={{ position: 'relative', width: '260px' }}>
               <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
               <input
                 type="text"
-                placeholder="Search student..."
+                placeholder="Search name, ID, phone..."
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 className="search-input"
                 style={{ paddingLeft: '36px', height: '38px', fontSize: '0.85rem' }}
               />
             </div>
+          </div>
+
+          {/* Class Hierarchy Filter Tabs */}
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '16px' }}>
+            {['All Classes', 'Class 5', 'Class 6', 'Class 7', 'Class 8', 'Class 9', 'Class 10', 'ADCA Computer Diploma'].map(cls => {
+              const count = cls === 'All Classes' ? students.length : students.filter(s => s.className === cls).length;
+              const isActive = (cls === 'All Classes' && !searchQuery) || searchQuery === cls;
+              return (
+                <button
+                  key={cls}
+                  onClick={() => setSearchQuery(cls === 'All Classes' ? '' : cls)}
+                  style={{
+                    padding: '6px 14px',
+                    borderRadius: '16px',
+                    fontSize: '0.78rem',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    border: isActive ? '1px solid var(--brand-crimson)' : '1px solid var(--border-color)',
+                    background: isActive ? 'rgba(230,57,70,0.18)' : 'var(--bg-glass)',
+                    color: isActive ? 'var(--brand-crimson)' : 'var(--text-primary)'
+                  }}
+                >
+                  {cls} ({count})
+                </button>
+              );
+            })}
           </div>
 
           <div style={{ overflowX: 'auto' }}>

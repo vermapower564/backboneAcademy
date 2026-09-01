@@ -4,15 +4,29 @@ import pool, { isTiDBConnected } from '../database.js';
 import { verifyRole } from '../middleware/authMiddleware.js';
 import { recordAuditLog } from '../middleware/auditLogger.js';
 
+import { getTeacherAssignedClasses } from '../services/teacherService.js';
+
 const router = express.Router();
 
-// GET /api/students - List students (RBAC & Data Privacy enforced)
+// GET /api/students - List students (RBAC, Class Separation & Data Privacy enforced)
 router.get('/students', async (req, res, next) => {
   const { search, className, board, status } = req.query;
   const userRole = (req.user?.role || 'GUEST').toUpperCase();
   const verifiedStudentId = req.user?.studentId;
+  const userEmail = req.user?.email;
 
   try {
+    let teacherAssignedClasses = [];
+    if (userRole === 'TEACHER') {
+      teacherAssignedClasses = await getTeacherAssignedClasses(userEmail, req.user?.id);
+      if (className && !teacherAssignedClasses.includes(className)) {
+        return res.status(403).json({
+          success: false,
+          message: `Access denied. You are only authorized to access assigned classes: ${teacherAssignedClasses.join(', ')}`
+        });
+      }
+    }
+
     if (isTiDBConnected) {
       let query = 'SELECT * FROM students WHERE 1=1';
       const params = [];
@@ -21,8 +35,22 @@ router.get('/students', async (req, res, next) => {
       if (userRole === 'STUDENT' && verifiedStudentId) {
         query += ' AND studentId = ?';
         params.push(verifiedStudentId);
-      } else if (userRole === 'ADMIN' || userRole === 'TEACHER') {
+      } else if (userRole === 'ADMIN') {
         if (className) { query += ' AND className = ?'; params.push(className); }
+        if (board) { query += ' AND board = ?'; params.push(board); }
+        if (status) { query += ' AND status = ?'; params.push(status); }
+        if (search) {
+          query += ' AND (name LIKE ? OR studentId LIKE ? OR mobile LIKE ?)';
+          params.push(`%${search}%`, `%${search}%`, `%${search}%`);
+        }
+      } else if (userRole === 'TEACHER') {
+        if (className) {
+          query += ' AND className = ?';
+          params.push(className);
+        } else if (teacherAssignedClasses.length > 0) {
+          query += ` AND className IN (${teacherAssignedClasses.map(() => '?').join(',')})`;
+          params.push(...teacherAssignedClasses);
+        }
         if (board) { query += ' AND board = ?'; params.push(board); }
         if (status) { query += ' AND status = ?'; params.push(status); }
         if (search) {
@@ -43,8 +71,24 @@ router.get('/students', async (req, res, next) => {
 
     if (userRole === 'STUDENT' && verifiedStudentId) {
       result = result.filter(s => s.studentId === verifiedStudentId);
-    } else if (userRole === 'ADMIN' || userRole === 'TEACHER') {
+    } else if (userRole === 'ADMIN') {
       if (className) result = result.filter(s => s.className === className);
+      if (board) result = result.filter(s => s.board === board);
+      if (status) result = result.filter(s => s.status === status);
+      if (search) {
+        const q = search.toLowerCase();
+        result = result.filter(s =>
+          s.name.toLowerCase().includes(q) ||
+          s.studentId.toLowerCase().includes(q) ||
+          s.mobile.includes(q)
+        );
+      }
+    } else if (userRole === 'TEACHER') {
+      if (className) {
+        result = result.filter(s => s.className === className);
+      } else if (teacherAssignedClasses.length > 0) {
+        result = result.filter(s => teacherAssignedClasses.includes(s.className));
+      }
       if (board) result = result.filter(s => s.board === board);
       if (status) result = result.filter(s => s.status === status);
       if (search) {
