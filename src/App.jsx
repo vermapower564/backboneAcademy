@@ -11,6 +11,11 @@ import FloatingShareWidget from './components/FloatingShareWidget';
 import FloatingWhatsAppWidget from './components/FloatingWhatsAppWidget';
 import PracticeLab from './components/PracticeLab';
 import Dashboard from './components/Dashboard';
+import AboutSection from './components/AboutSection';
+import AdmissionForm from './components/AdmissionForm';
+import AdminDashboard from './components/admin/AdminDashboard';
+import StudentDashboard from './components/student/StudentDashboard';
+import TeacherDashboard from './components/teacher/TeacherDashboard';
 import CertificateGenerator from './components/CertificateGenerator';
 import Leaderboard from './components/Leaderboard';
 import ContactSection from './components/ContactSection';
@@ -31,7 +36,7 @@ export default function App() {
   const [userXP, setUserXP] = useState(450);
   const [streakDays, setStreakDays] = useState(12);
   const [enrolledCourses, setEnrolledCourses] = useState(['navodaya-prep-101', 'dca-course']);
-  
+
   // User & Modal states
   const [user, setUser] = useState(null);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
@@ -58,10 +63,14 @@ export default function App() {
 
   const handleLoginSuccess = (userData) => {
     setUser(userData);
+    if (userData?.role === 'ADMIN' || userData?.role === 'TEACHER' || userData?.role === 'STUDENT') {
+      setActiveTab('portal');
+    }
   };
 
   const handleLogout = () => {
     setUser(null);
+    setActiveTab('courses');
   };
 
   return (
@@ -84,7 +93,7 @@ export default function App() {
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <Bell size={15} />
-          <span>📢 <strong>Admissions Open for New Batches!</strong> 🎁 Reserve 3 Days Free Trial Demo Classes with Rahul Sir, Subham Pandey Sir, Roushan Verma Sir, Shivam Sir & Riya Ma'am.</span>
+          <span>📢 <strong>Admissions Open 2026-27 at Pandra Ranchi Campus!</strong> Reserve 3 Days Free Trial Demo Classes with Rahul Verma Sir & Team.</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
           <a href="tel:9304868696" style={{ color: '#FFF', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>
@@ -152,6 +161,21 @@ export default function App() {
           </>
         )}
 
+        {activeTab === 'about' && (
+          <>
+            <AboutSection />
+            <FacultySection onOpenDemoModal={() => setIsDemoModalOpen(true)} />
+            <FAQSection />
+          </>
+        )}
+
+        {activeTab === 'admission' && (
+          <>
+            <AdmissionForm />
+            <FAQSection />
+          </>
+        )}
+
         {activeTab === 'faculty' && (
           <>
             <FacultySection onOpenDemoModal={() => setIsDemoModalOpen(true)} />
@@ -177,13 +201,23 @@ export default function App() {
           </>
         )}
 
-        {activeTab === 'dashboard' && (
-          <Dashboard 
-            userXP={userXP} 
-            streakDays={streakDays} 
-            enrolledCourses={enrolledCourses} 
-            onNavigate={setActiveTab} 
-          />
+        {(activeTab === 'dashboard' || activeTab === 'portal') && (
+          user ? (
+            user.role === 'ADMIN' ? (
+              <AdminDashboard />
+            ) : user.role === 'TEACHER' ? (
+              <TeacherDashboard user={user} />
+            ) : (
+              <StudentDashboard user={user} onNavigate={setActiveTab} />
+            )
+          ) : (
+            <Dashboard 
+              userXP={userXP} 
+              streakDays={streakDays} 
+              enrolledCourses={enrolledCourses} 
+              onNavigate={setActiveTab} 
+            />
+          )
         )}
 
         {(activeTab === 'certificates' || activeTab === 'certificate') && (

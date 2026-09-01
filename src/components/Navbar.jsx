@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { Sun, Moon, Flame, Compass, Terminal, Award, LayoutDashboard, Trophy, Phone, Star, User, LogIn, LogOut, Laptop, Gift, UserCheck, Share2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Sun, Moon, Flame, Compass, Terminal, Award, LayoutDashboard, Trophy, Phone, Star, User, LogIn, LogOut, Laptop, Gift, UserCheck, Share2, ChevronLeft, ChevronRight, Info, Edit3, Shield, GraduationCap } from 'lucide-react';
 
 export default function Navbar({ activeTab, setActiveTab, theme, toggleTheme, userXP, streakDays, user, onOpenAuth, onLogout, onOpenDemoModal, onOpenShareModal }) {
   const navMenuRef = useRef(null);
@@ -15,6 +15,8 @@ export default function Navbar({ activeTab, setActiveTab, theme, toggleTheme, us
       navMenuRef.current.scrollBy({ left: 200, behavior: 'smooth' });
     }
   };
+
+  const userRole = user?.role || 'STUDENT';
 
   return (
     <header className="navbar">
@@ -58,7 +60,7 @@ export default function Navbar({ activeTab, setActiveTab, theme, toggleTheme, us
                 onClick={() => setActiveTab('courses')}
               >
                 <Compass size={17} />
-                <span>All Courses</span>
+                <span>School Courses</span>
               </button>
             </li>
             <li>
@@ -73,11 +75,29 @@ export default function Navbar({ activeTab, setActiveTab, theme, toggleTheme, us
             </li>
             <li>
               <button 
+                className={`nav-link ${activeTab === 'about' ? 'active' : ''}`}
+                onClick={() => setActiveTab('about')}
+              >
+                <Info size={17} />
+                <span>About Us</span>
+              </button>
+            </li>
+            <li>
+              <button 
                 className={`nav-link ${activeTab === 'faculty' ? 'active' : ''}`}
                 onClick={() => setActiveTab('faculty')}
               >
                 <UserCheck size={17} />
                 <span>Faculty</span>
+              </button>
+            </li>
+            <li>
+              <button 
+                className={`nav-link ${activeTab === 'admission' ? 'active' : ''}`}
+                onClick={() => setActiveTab('admission')}
+              >
+                <Edit3 size={17} />
+                <span>Admission Enquiry</span>
               </button>
             </li>
             <li>
@@ -119,11 +139,12 @@ export default function Navbar({ activeTab, setActiveTab, theme, toggleTheme, us
             </li>
             <li>
               <button 
-                className={`nav-link ${activeTab === 'dashboard' ? 'active' : ''}`}
-                onClick={() => setActiveTab('dashboard')}
+                className={`nav-link ${activeTab === 'dashboard' || activeTab === 'portal' ? 'active' : ''}`}
+                onClick={() => setActiveTab(user ? 'portal' : 'dashboard')}
+                style={{ color: 'var(--brand-gold)' }}
               >
-                <LayoutDashboard size={17} />
-                <span>Dashboard</span>
+                <LayoutDashboard size={17} color="var(--brand-gold)" />
+                <span>{userRole === 'ADMIN' ? 'Admin Portal' : userRole === 'TEACHER' ? 'Faculty Portal' : 'Student Portal'}</span>
               </button>
             </li>
           </ul>
@@ -161,16 +182,21 @@ export default function Navbar({ activeTab, setActiveTab, theme, toggleTheme, us
         </div>
 
         {user ? (
-          <button 
-            className="btn-outline" 
-            style={{ padding: '6px 12px', fontSize: '0.82rem', gap: '6px' }}
-            onClick={onLogout}
-            title="Logged in - Click to Sign Out"
-          >
-            <User size={15} color="var(--brand-crimson)" />
-            <span>{user.name}</span>
-            <LogOut size={14} style={{ marginLeft: '4px', opacity: 0.7 }} />
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{ fontSize: '0.75rem', padding: '3px 8px', borderRadius: '12px', background: userRole === 'ADMIN' ? 'rgba(230,57,70,0.2)' : userRole === 'TEACHER' ? 'rgba(255,183,3,0.2)' : 'rgba(34,197,94,0.2)', color: userRole === 'ADMIN' ? 'var(--brand-crimson)' : userRole === 'TEACHER' ? 'var(--brand-gold)' : '#4ADE80', fontWeight: 800 }}>
+              {userRole}
+            </span>
+            <button 
+              className="btn-outline" 
+              style={{ padding: '6px 12px', fontSize: '0.82rem', gap: '6px' }}
+              onClick={onLogout}
+              title="Logged in - Click to Sign Out"
+            >
+              <User size={15} color="var(--brand-crimson)" />
+              <span>{user.name}</span>
+              <LogOut size={14} style={{ marginLeft: '2px', opacity: 0.7 }} />
+            </button>
+          </div>
         ) : (
           <button 
             className="btn-crimson" 
