@@ -28,23 +28,25 @@ router.get('/exams', async (req, res, next) => {
   }
 });
 
-// GET /api/exams/results - Get exam results & report cards (Data Privacy Enforced)
+// GET /api/exams/results - Get exam results & report cards (Cryptographic Data Isolation)
 router.get('/exams/results', async (req, res, next) => {
   const { studentId, examId } = req.query;
-  const userRole = req.headers['x-user-role'] || 'STUDENT';
-  const reqStudentId = req.headers['x-student-id'] || studentId;
+  const userRole = (req.user?.role || 'GUEST').toUpperCase();
+  const verifiedStudentId = req.user?.studentId;
 
   try {
     if (isTiDBConnected) {
       let query = 'SELECT * FROM exam_results WHERE 1=1';
       const params = [];
 
-      if (userRole === 'STUDENT' && reqStudentId) {
+      if (userRole === 'STUDENT' && verifiedStudentId) {
         query += ' AND studentId = ?';
-        params.push(reqStudentId);
-      } else {
+        params.push(verifiedStudentId);
+      } else if (userRole === 'ADMIN' || userRole === 'TEACHER') {
         if (studentId) { query += ' AND studentId = ?'; params.push(studentId); }
         if (examId) { query += ' AND examId = ?'; params.push(examId); }
+      } else {
+        return res.status(403).json({ success: false, message: 'Access denied.' });
       }
 
       const [rows] = await pool.query(query, params);
@@ -54,11 +56,13 @@ router.get('/exams/results', async (req, res, next) => {
     const db = readDB();
     let result = db.examResults || [];
 
-    if (userRole === 'STUDENT' && reqStudentId) {
-      result = result.filter(r => r.studentId === reqStudentId);
-    } else {
+    if (userRole === 'STUDENT' && verifiedStudentId) {
+      result = result.filter(r => r.studentId === verifiedStudentId);
+    } else if (userRole === 'ADMIN' || userRole === 'TEACHER') {
       if (studentId) result = result.filter(r => r.studentId === studentId);
       if (examId) result = result.filter(r => String(r.examId) === String(examId));
+    } else {
+      return res.status(403).json({ success: false, message: 'Access denied.' });
     }
 
     return res.json({ success: true, count: result.length, results: result });

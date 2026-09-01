@@ -8,19 +8,19 @@ const router = express.Router();
 // GET /api/students - List students (RBAC & Data Privacy enforced)
 router.get('/students', async (req, res, next) => {
   const { search, className, board, status } = req.query;
-  const userRole = req.headers['x-user-role'] || 'STUDENT';
-  const reqStudentId = req.headers['x-student-id'];
+  const userRole = (req.user?.role || 'GUEST').toUpperCase();
+  const verifiedStudentId = req.user?.studentId;
 
   try {
     if (isTiDBConnected) {
       let query = 'SELECT * FROM students WHERE 1=1';
       const params = [];
 
-      // Enforce data privacy: Students can only query their own record
-      if (userRole === 'STUDENT' && reqStudentId) {
+      // Enforce cryptographic data privacy: Students can ONLY query their own verified record
+      if (userRole === 'STUDENT' && verifiedStudentId) {
         query += ' AND studentId = ?';
-        params.push(reqStudentId);
-      } else {
+        params.push(verifiedStudentId);
+      } else if (userRole === 'ADMIN' || userRole === 'TEACHER') {
         if (className) { query += ' AND className = ?'; params.push(className); }
         if (board) { query += ' AND board = ?'; params.push(board); }
         if (status) { query += ' AND status = ?'; params.push(status); }
@@ -28,6 +28,8 @@ router.get('/students', async (req, res, next) => {
           query += ' AND (name LIKE ? OR studentId LIKE ? OR mobile LIKE ?)';
           params.push(`%${search}%`, `%${search}%`, `%${search}%`);
         }
+      } else {
+        return res.status(403).json({ success: false, message: 'Access denied.' });
       }
 
       query += ' ORDER BY id DESC';
@@ -38,9 +40,9 @@ router.get('/students', async (req, res, next) => {
     const db = readDB();
     let result = db.students || [];
 
-    if (userRole === 'STUDENT' && reqStudentId) {
-      result = result.filter(s => s.studentId === reqStudentId);
-    } else {
+    if (userRole === 'STUDENT' && verifiedStudentId) {
+      result = result.filter(s => s.studentId === verifiedStudentId);
+    } else if (userRole === 'ADMIN' || userRole === 'TEACHER') {
       if (className) result = result.filter(s => s.className === className);
       if (board) result = result.filter(s => s.board === board);
       if (status) result = result.filter(s => s.status === status);
@@ -52,6 +54,8 @@ router.get('/students', async (req, res, next) => {
           s.mobile.includes(q)
         );
       }
+    } else {
+      return res.status(403).json({ success: false, message: 'Access denied.' });
     }
 
     return res.json({ success: true, count: result.length, students: result });

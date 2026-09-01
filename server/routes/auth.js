@@ -4,6 +4,7 @@ import { readDB, writeDB } from '../db.js';
 import pool, { isTiDBConnected, updateUserPasswordHash } from '../database.js';
 import { validateRegister, validateLogin } from '../middleware/validation.js';
 import { sendWelcomeEmail } from '../email.js';
+import { generateToken } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
@@ -22,6 +23,7 @@ router.post('/register', validateRegister, async (req, res, next) => {
 
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
+    let userId = Date.now();
 
     if (isTiDBConnected) {
       const [existing] = await pool.query('SELECT id FROM users WHERE LOWER(email) = LOWER(?)', [email]);
@@ -34,36 +36,31 @@ router.post('/register', validateRegister, async (req, res, next) => {
         [name, email, hashedPassword, userRole, studentId]
       );
 
-      // Async trigger welcome email
-      sendWelcomeEmail({ name, email }).catch(err => console.error('Welcome email error:', err.message));
+      userId = result.insertId;
+    } else {
+      const db = readDB();
+      const existingUser = db.users.find(u => u.email.toLowerCase() === email.toLowerCase());
 
-      return res.json({
-        success: true,
-        message: 'Account created successfully!',
-        user: { id: result.insertId, name, email, role: userRole, studentId }
-      });
+      if (existingUser) {
+        return res.status(400).json({ success: false, message: 'An account with this email already exists!' });
+      }
+
+      const newUser = {
+        id: userId,
+        name,
+        email,
+        password: hashedPassword,
+        role: userRole,
+        studentId,
+        createdAt: new Date().toISOString()
+      };
+
+      db.users.push(newUser);
+      writeDB(db);
     }
 
-    // Fallback JSON DB
-    const db = readDB();
-    const existingUser = db.users.find(u => u.email.toLowerCase() === email.toLowerCase());
-
-    if (existingUser) {
-      return res.status(400).json({ success: false, message: 'An account with this email already exists!' });
-    }
-
-    const newUser = {
-      id: Date.now(),
-      name,
-      email,
-      password: hashedPassword,
-      role: userRole,
-      studentId,
-      createdAt: new Date().toISOString()
-    };
-
-    db.users.push(newUser);
-    writeDB(db);
+    const userData = { id: userId, name, email, role: userRole, studentId };
+    const token = generateToken(userData);
 
     // Async trigger welcome email
     sendWelcomeEmail({ name, email }).catch(err => console.error('Welcome email error:', err.message));
@@ -71,7 +68,8 @@ router.post('/register', validateRegister, async (req, res, next) => {
     return res.json({
       success: true,
       message: 'Account created successfully!',
-      user: { id: newUser.id, name: newUser.name, email: newUser.email, role: newUser.role, studentId: newUser.studentId }
+      token,
+      user: userData
     });
   } catch (error) {
     next(error);
@@ -135,16 +133,21 @@ router.post('/login', validateLogin, async (req, res, next) => {
       return res.status(401).json({ success: false, message: 'Invalid email or password.' });
     }
 
+    const userData = {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role || 'STUDENT',
+      studentId: user.studentId || (user.email === 'aarav@backbone.edu' ? 'STU-2026-001' : null)
+    };
+
+    const token = generateToken(userData);
+
     return res.json({
       success: true,
       message: `Welcome back, ${user.name}!`,
-      user: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        role: user.role || 'STUDENT',
-        studentId: user.studentId || (user.email === 'aarav@backbone.edu' ? 'STU-2026-001' : null)
-      }
+      token,
+      user: userData
     });
   } catch (error) {
     next(error);

@@ -5,24 +5,26 @@ import { verifyRole } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-// GET /api/attendance - Query attendance (Data Privacy Enforced)
+// GET /api/attendance - Query attendance (Cryptographic Data Isolation)
 router.get('/attendance', async (req, res, next) => {
   const { date, className, studentId } = req.query;
-  const userRole = req.headers['x-user-role'] || 'STUDENT';
-  const reqStudentId = req.headers['x-student-id'] || studentId;
+  const userRole = (req.user?.role || 'GUEST').toUpperCase();
+  const verifiedStudentId = req.user?.studentId;
 
   try {
     if (isTiDBConnected) {
       let query = 'SELECT * FROM attendance WHERE 1=1';
       const params = [];
 
-      if (userRole === 'STUDENT' && reqStudentId) {
+      if (userRole === 'STUDENT' && verifiedStudentId) {
         query += ' AND studentId = ?';
-        params.push(reqStudentId);
-      } else {
+        params.push(verifiedStudentId);
+      } else if (userRole === 'ADMIN' || userRole === 'TEACHER') {
         if (date) { query += ' AND date = ?'; params.push(date); }
         if (className) { query += ' AND className = ?'; params.push(className); }
         if (studentId) { query += ' AND studentId = ?'; params.push(studentId); }
+      } else {
+        return res.status(403).json({ success: false, message: 'Access denied.' });
       }
 
       const [rows] = await pool.query(query, params);
@@ -32,12 +34,14 @@ router.get('/attendance', async (req, res, next) => {
     const db = readDB();
     let result = db.attendance || [];
 
-    if (userRole === 'STUDENT' && reqStudentId) {
-      result = result.filter(a => a.studentId === reqStudentId);
-    } else {
+    if (userRole === 'STUDENT' && verifiedStudentId) {
+      result = result.filter(a => a.studentId === verifiedStudentId);
+    } else if (userRole === 'ADMIN' || userRole === 'TEACHER') {
       if (date) result = result.filter(a => a.date === date);
       if (className) result = result.filter(a => a.className === className);
       if (studentId) result = result.filter(a => a.studentId === studentId);
+    } else {
+      return res.status(403).json({ success: false, message: 'Access denied.' });
     }
 
     return res.json({ success: true, count: result.length, attendance: result });

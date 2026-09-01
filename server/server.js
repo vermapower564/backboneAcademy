@@ -2,6 +2,7 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import { securityHeaders, authRateLimiter, apiRateLimiter } from './middleware/security.js';
+import { authenticateToken } from './middleware/authMiddleware.js';
 import { initDB } from './db.js';
 import { initTiDBConnection, isTiDBConnected, checkDatabaseHealth } from './database.js';
 
@@ -33,7 +34,7 @@ app.use(securityHeaders);
 app.use(cors({
   origin: [FRONTEND_URL, 'http://localhost:5173', 'http://127.0.0.1:5173'],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'x-user-role'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-user-role', 'x-student-id', 'x-auth-token'],
   credentials: true
 }));
 
@@ -42,6 +43,9 @@ app.use(express.json({ limit: '10kb' }));
 
 // Apply General Rate Limiter to all API endpoints
 app.use('/api', apiRateLimiter);
+
+// 🔐 Mount Token Authentication Middleware Globally (Binds verified req.user context)
+app.use(authenticateToken);
 
 // 🩺 Enhanced Health Check Endpoint (Dynamic DB ping check)
 app.get('/api/health', async (req, res) => {

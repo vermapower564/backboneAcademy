@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Mail, Lock, User, LogIn, UserPlus, CheckCircle, AlertCircle, Shield, GraduationCap, UserCheck } from 'lucide-react';
+import { X, Mail, Lock, User, LogIn, UserPlus, CheckCircle, AlertCircle } from 'lucide-react';
 
 export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
   const [isLoginMode, setIsLoginMode] = useState(true);
@@ -54,7 +54,8 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
 
       const authenticatedUser = {
         ...(data.user || {}),
-        role: data.user?.role || role || 'STUDENT'
+        role: data.user?.role || role || 'STUDENT',
+        token: data.token
       };
 
       setSuccessMsg(data.message);
@@ -70,7 +71,8 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
         id: Date.now(),
         name: userDisplayName,
         email,
-        role
+        role,
+        studentId: role === 'STUDENT' ? 'STU-2026-001' : null
       };
 
       setSuccessMsg(isLoginMode ? `Welcome back, ${userDisplayName}!` : `Account created successfully! Welcome to Backbone Academy.`);

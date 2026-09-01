@@ -5,23 +5,25 @@ import { verifyRole } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-// GET /api/fees - Get fee records (Data Privacy Enforced)
+// GET /api/fees - Get fee records (Cryptographic Data Isolation)
 router.get('/fees', async (req, res, next) => {
   const { studentId, paymentStatus } = req.query;
-  const userRole = req.headers['x-user-role'] || 'STUDENT';
-  const reqStudentId = req.headers['x-student-id'] || studentId;
+  const userRole = (req.user?.role || 'GUEST').toUpperCase();
+  const verifiedStudentId = req.user?.studentId;
 
   try {
     if (isTiDBConnected) {
       let query = 'SELECT * FROM fees WHERE 1=1';
       const params = [];
 
-      if (userRole === 'STUDENT' && reqStudentId) {
+      if (userRole === 'STUDENT' && verifiedStudentId) {
         query += ' AND studentId = ?';
-        params.push(reqStudentId);
-      } else {
+        params.push(verifiedStudentId);
+      } else if (userRole === 'ADMIN' || userRole === 'TEACHER') {
         if (studentId) { query += ' AND studentId = ?'; params.push(studentId); }
         if (paymentStatus) { query += ' AND paymentStatus = ?'; params.push(paymentStatus); }
+      } else {
+        return res.status(403).json({ success: false, message: 'Access denied.' });
       }
 
       const [rows] = await pool.query(query, params);
@@ -31,11 +33,13 @@ router.get('/fees', async (req, res, next) => {
     const db = readDB();
     let result = db.fees || [];
 
-    if (userRole === 'STUDENT' && reqStudentId) {
-      result = result.filter(f => f.studentId === reqStudentId);
-    } else {
+    if (userRole === 'STUDENT' && verifiedStudentId) {
+      result = result.filter(f => f.studentId === verifiedStudentId);
+    } else if (userRole === 'ADMIN' || userRole === 'TEACHER') {
       if (studentId) result = result.filter(f => f.studentId === studentId);
       if (paymentStatus) result = result.filter(f => f.paymentStatus === paymentStatus);
+    } else {
+      return res.status(403).json({ success: false, message: 'Access denied.' });
     }
 
     return res.json({ success: true, count: result.length, fees: result });
