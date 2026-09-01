@@ -108,6 +108,40 @@ const initialData = {
       createdBy: "Academy Director",
       createdAt: "2026-08-30T00:00:00.000Z"
     }
+  ],
+  notifications: [
+    {
+      id: 1,
+      studentId: "STU-2026-001",
+      targetClass: "Class 10",
+      type: "New assignment",
+      title: "📘 New Assignment Published: Physics Light Numerical Set",
+      message: "Rahul Verma Sir published a new homework assignment due on Sep 10, 2026.",
+      isRead: false,
+      relatedId: "1",
+      createdAt: "2026-08-30T10:00:00.000Z"
+    },
+    {
+      id: 2,
+      studentId: "STU-2026-001",
+      targetClass: "Class 10",
+      type: "Fee reminder",
+      title: "🧾 Fee Payment Receipt Updated",
+      message: "Payment receipt #REC-2026-101 of ₹8,000 has been recorded for your account.",
+      isRead: false,
+      relatedId: "101",
+      createdAt: "2026-08-28T14:30:00.000Z"
+    },
+    {
+      id: 3,
+      targetClass: "All Classes",
+      type: "Holiday/calendar update",
+      title: "🌴 Teacher's Day Celebration & Holiday Notice",
+      message: "Academy will remain open till 1:00 PM on Sep 05 for Teacher's Day function.",
+      isRead: true,
+      relatedId: "1",
+      createdAt: "2026-08-25T09:00:00.000Z"
+    }
   ]
 };
 

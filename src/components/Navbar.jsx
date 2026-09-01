@@ -1,5 +1,6 @@
-import React, { useRef } from 'react';
-import { Compass, Laptop, Info, UserCheck, Edit3, Award, Star, Phone, LayoutDashboard, LogIn, LogOut, Share2, ChevronLeft, ChevronRight, User, ShieldCheck, Gift } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Compass, Laptop, Info, UserCheck, Edit3, Award, Star, Phone, LayoutDashboard, LogIn, LogOut, Share2, ChevronLeft, ChevronRight, User, ShieldCheck, Gift, Bell } from 'lucide-react';
+import NotificationCenter from './NotificationCenter';
 
 export default function Navbar({ 
   activeTab, 
@@ -13,6 +14,24 @@ export default function Navbar({
   onOpenShareModal 
 }) {
   const navMenuRef = useRef(null);
+  const [showNotifDropdown, setShowNotifDropdown] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(1);
+
+  useEffect(() => {
+    if (user) {
+      const headers = { 'Content-Type': 'application/json' };
+      if (user.token) headers['Authorization'] = `Bearer ${user.token}`;
+      else {
+        headers['x-user-role'] = user.role || 'STUDENT';
+        if (user.studentId) headers['x-student-id'] = user.studentId;
+      }
+
+      fetch('http://localhost:5000/api/notifications', { headers })
+        .then(r => r.json())
+        .then(d => { if (d?.unreadCount !== undefined) setUnreadCount(d.unreadCount); })
+        .catch(err => console.error(err));
+    }
+  }, [user]);
 
   const scrollLeft = () => {
     if (navMenuRef.current) {
@@ -160,7 +179,42 @@ export default function Navbar({
         </button>
 
         {user ? (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', position: 'relative' }}>
+            {/* Notification Bell Button */}
+            <button
+              className="btn-outline"
+              style={{ padding: '6px 10px', fontSize: '0.82rem', position: 'relative' }}
+              onClick={() => setShowNotifDropdown(!showNotifDropdown)}
+              title="Notification Center"
+            >
+              <Bell size={16} color="var(--brand-gold)" />
+              {unreadCount > 0 && (
+                <span style={{ position: 'absolute', top: '-4px', right: '-4px', background: 'var(--brand-crimson)', color: '#FFF', borderRadius: '50%', width: '16px', height: '16px', fontSize: '0.65rem', fontWeight: 900, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  {unreadCount}
+                </span>
+              )}
+            </button>
+
+            {/* Notification Flyout Dropdown */}
+            {showNotifDropdown && (
+              <div
+                className="glass-panel-highlight"
+                style={{
+                  position: 'absolute',
+                  right: 0,
+                  top: '42px',
+                  width: '360px',
+                  padding: '16px',
+                  borderRadius: '16px',
+                  boxShadow: '0 12px 32px rgba(0,0,0,0.35)',
+                  zIndex: 999,
+                  border: '1px solid var(--brand-crimson)'
+                }}
+              >
+                <NotificationCenter user={user} isDropdown={true} onClose={() => setShowNotifDropdown(false)} />
+              </div>
+            )}
+
             <span style={{ fontSize: '0.75rem', padding: '3px 8px', borderRadius: '12px', background: userRole === 'ADMIN' ? 'rgba(230,57,70,0.2)' : userRole === 'TEACHER' ? 'rgba(255,183,3,0.2)' : 'rgba(34,197,94,0.2)', color: userRole === 'ADMIN' ? 'var(--brand-crimson)' : userRole === 'TEACHER' ? 'var(--brand-gold)' : '#4ADE80', fontWeight: 800 }}>
               {userRole}
             </span>

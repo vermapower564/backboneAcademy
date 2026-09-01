@@ -296,10 +296,16 @@ const TABLE_DEFINITIONS = [
       CREATE TABLE IF NOT EXISTS notifications (
         id INT AUTO_INCREMENT PRIMARY KEY,
         userId INT,
-        title VARCHAR(255),
-        message TEXT,
+        studentId VARCHAR(50),
+        targetClass VARCHAR(100) DEFAULT 'All Classes',
+        type VARCHAR(50) DEFAULT 'NOTICE',
+        title VARCHAR(255) NOT NULL,
+        message TEXT NOT NULL,
         isRead BOOLEAN DEFAULT FALSE,
-        createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
+        relatedId VARCHAR(100),
+        createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+        INDEX idx_notif_student (studentId),
+        INDEX idx_notif_class (targetClass)
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `
   },

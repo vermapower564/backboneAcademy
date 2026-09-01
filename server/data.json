@@ -485,6 +485,28 @@
   ],
   "auditLogs": [
     {
+      "id": 1788256784896.001,
+      "userId": 2,
+      "userName": "Rahul Sir",
+      "userRole": "TEACHER",
+      "action": "SEND_NOTIFICATION",
+      "targetEntity": "notifications",
+      "targetRecordId": "1788256784891",
+      "metadata": "{\"title\":\"📘 Class 10 Physics Homework Reminder\",\"type\":\"New assignment\",\"targetClass\":\"Class 10\"}",
+      "createdAt": "2026-09-01T09:59:44.896Z"
+    },
+    {
+      "id": 1788256784870.0203,
+      "userId": 1,
+      "userName": "Director",
+      "userRole": "ADMIN",
+      "action": "SEND_NOTIFICATION",
+      "targetEntity": "notifications",
+      "targetRecordId": "1788256784865",
+      "metadata": "{\"title\":\"📢 Annual Sports Day Registration Open\",\"type\":\"Important academy notice\",\"targetClass\":\"All Classes\"}",
+      "createdAt": "2026-09-01T09:59:44.870Z"
+    },
+    {
       "id": 1788256614401.4019,
       "userId": 1,
       "userName": "Director",
@@ -604,6 +626,62 @@
       "status": "PUBLISHED",
       "createdBy": "Director",
       "createdAt": "2026-09-01T09:56:54.396Z"
+    }
+  ],
+  "notifications": [
+    {
+      "id": 1788256784891,
+      "studentId": null,
+      "targetClass": "Class 10",
+      "type": "New assignment",
+      "title": "📘 Class 10 Physics Homework Reminder",
+      "message": "Complete Light chapter numerical problems by Friday.",
+      "isRead": true,
+      "relatedId": null,
+      "createdAt": "2026-09-01T09:59:44.891Z"
+    },
+    {
+      "id": 1788256784865,
+      "studentId": null,
+      "targetClass": "All Classes",
+      "type": "Important academy notice",
+      "title": "📢 Annual Sports Day Registration Open",
+      "message": "Register for athletic events at Pandra Ranchi campus desk.",
+      "isRead": true,
+      "relatedId": null,
+      "createdAt": "2026-09-01T09:59:44.865Z"
+    },
+    {
+      "id": 1,
+      "studentId": "STU-2026-001",
+      "targetClass": "Class 10",
+      "type": "New assignment",
+      "title": "📘 New Assignment Published: Physics Light Numerical Set",
+      "message": "Rahul Verma Sir published a new homework assignment due on Sep 10, 2026.",
+      "isRead": true,
+      "relatedId": "1",
+      "createdAt": "2026-08-30T10:00:00.000Z"
+    },
+    {
+      "id": 2,
+      "studentId": "STU-2026-001",
+      "targetClass": "Class 10",
+      "type": "Fee reminder",
+      "title": "🧾 Fee Payment Receipt Updated",
+      "message": "Payment receipt #REC-2026-101 of ₹8,000 has been recorded for your account.",
+      "isRead": true,
+      "relatedId": "101",
+      "createdAt": "2026-08-28T14:30:00.000Z"
+    },
+    {
+      "id": 3,
+      "targetClass": "All Classes",
+      "type": "Holiday/calendar update",
+      "title": "🌴 Teacher's Day Celebration & Holiday Notice",
+      "message": "Academy will remain open till 1:00 PM on Sep 05 for Teacher's Day function.",
+      "isRead": true,
+      "relatedId": "1",
+      "createdAt": "2026-08-25T09:00:00.000Z"
     }
   ]
 }
