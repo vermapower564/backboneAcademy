@@ -79,6 +79,15 @@
   ],
   "students": [
     {
+      "id": 1788249673571,
+      "studentId": "STU-2026-973",
+      "name": "Audit Test Student",
+      "mobile": "9999988888",
+      "className": "Class 10",
+      "admissionDate": "2026-09-01",
+      "status": "ACTIVE"
+    },
+    {
       "id": 1,
       "studentId": "STU-2026-001",
       "name": "Aarav Kumar",
@@ -408,6 +417,19 @@
       "publishDate": "2026-08-28",
       "expiryDate": "2026-09-10",
       "status": "ACTIVE"
+    }
+  ],
+  "auditLogs": [
+    {
+      "id": 1788249673576.0088,
+      "userId": 1,
+      "userName": "Academy Director",
+      "userRole": "ADMIN",
+      "action": "CREATE_STUDENT",
+      "targetEntity": "students",
+      "targetRecordId": "STU-2026-973",
+      "metadata": "{\"name\":\"Audit Test Student\",\"className\":\"Class 10\",\"mobile\":\"9999988888\"}",
+      "createdAt": "2026-09-01T08:01:13.576Z"
     }
   ]
 }

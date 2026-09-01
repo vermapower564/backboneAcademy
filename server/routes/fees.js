@@ -2,6 +2,7 @@ import express from 'express';
 import { readDB, writeDB } from '../db.js';
 import pool, { isTiDBConnected } from '../database.js';
 import { verifyRole } from '../middleware/authMiddleware.js';
+import { recordAuditLog } from '../middleware/auditLogger.js';
 
 const router = express.Router();
 
@@ -73,6 +74,7 @@ router.post('/fees/payment', verifyRole(['ADMIN']), async (req, res, next) => {
         [newPaid, newPending, status, payDate, feeId]
       );
 
+      await recordAuditLog({ req, action: 'RECORD_FEE_PAYMENT', targetEntity: 'fees', targetRecordId: feeId, metadata: { amountPaid, studentName: fee.studentName, newPending } });
       return res.json({ success: true, message: `Payment of ₹${amountPaid} recorded successfully! Receipt generated.` });
     }
 
@@ -89,6 +91,7 @@ router.post('/fees/payment', verifyRole(['ADMIN']), async (req, res, next) => {
     db.fees[index] = { ...fee, paidAmount: newPaid, pendingAmount: newPending, paymentStatus: status, paymentDate: payDate };
     writeDB(db);
 
+    await recordAuditLog({ req, action: 'RECORD_FEE_PAYMENT', targetEntity: 'fees', targetRecordId: feeId, metadata: { amountPaid, studentName: fee.studentName, newPending } });
     return res.json({ success: true, message: `Payment of ₹${amountPaid} recorded successfully! Receipt generated.`, fee: db.fees[index] });
   } catch (error) {
     next(error);

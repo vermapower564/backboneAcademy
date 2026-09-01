@@ -360,6 +360,25 @@ const TABLE_DEFINITIONS = [
         receivedAt DATETIME DEFAULT CURRENT_TIMESTAMP
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `
+  },
+  {
+    name: 'audit_logs',
+    query: `
+      CREATE TABLE IF NOT EXISTS audit_logs (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        userId INT,
+        userName VARCHAR(255),
+        userRole VARCHAR(50),
+        action VARCHAR(100) NOT NULL,
+        targetEntity VARCHAR(100) NOT NULL,
+        targetRecordId VARCHAR(100),
+        metadata TEXT,
+        createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+        INDEX idx_audit_user (userId),
+        INDEX idx_audit_action (action),
+        INDEX idx_audit_entity (targetEntity)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    `
   }
 ];
 

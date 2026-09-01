@@ -2,6 +2,7 @@ import express from 'express';
 import { readDB, writeDB } from '../db.js';
 import pool, { isTiDBConnected } from '../database.js';
 import { verifyRole } from '../middleware/authMiddleware.js';
+import { recordAuditLog } from '../middleware/auditLogger.js';
 
 const router = express.Router();
 
@@ -66,6 +67,7 @@ router.post('/attendance', verifyRole(['ADMIN', 'TEACHER']), async (req, res, ne
           [rec.studentId, className, date, rec.status || 'PRESENT', markedBy || 'Rahul Verma Sir']
         );
       }
+      await recordAuditLog({ req, action: 'MARK_ATTENDANCE', targetEntity: 'attendance', targetRecordId: date, metadata: { className, totalStudentsMarked: records.length } });
       return res.json({ success: true, message: `Attendance marked successfully for ${records.length} students on ${date}!` });
     }
 
@@ -85,6 +87,7 @@ router.post('/attendance', verifyRole(['ADMIN', 'TEACHER']), async (req, res, ne
     }
 
     writeDB(db);
+    await recordAuditLog({ req, action: 'MARK_ATTENDANCE', targetEntity: 'attendance', targetRecordId: date, metadata: { className, totalStudentsMarked: records.length } });
     return res.json({ success: true, message: `Attendance marked successfully for ${records.length} students on ${date}!` });
   } catch (error) {
     next(error);

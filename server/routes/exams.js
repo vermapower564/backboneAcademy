@@ -2,10 +2,10 @@ import express from 'express';
 import { readDB, writeDB } from '../db.js';
 import pool, { isTiDBConnected } from '../database.js';
 import { verifyRole } from '../middleware/authMiddleware.js';
+import { recordAuditLog } from '../middleware/auditLogger.js';
 
 const router = express.Router();
 
-// Helper: Calculate Grade from Percentage
 function calculateGrade(pct) {
   if (pct >= 90) return 'A+';
   if (pct >= 80) return 'A';
@@ -90,6 +90,7 @@ router.post('/exams/results', verifyRole(['ADMIN', 'TEACHER']), async (req, res,
          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [examId || 1, studentId, studentName || 'Student', className || 'Class 10', subject || 'Mathematics', marks, max, percentage, grade]
       );
+      await recordAuditLog({ req, action: 'SUBMIT_EXAM_MARKS', targetEntity: 'exam_results', targetRecordId: studentId, metadata: { subject, percentage, grade } });
       return res.json({ success: true, message: `Marks submitted! Percentage: ${percentage}%, Grade: ${grade}` });
     }
 
@@ -112,6 +113,7 @@ router.post('/exams/results', verifyRole(['ADMIN', 'TEACHER']), async (req, res,
     db.examResults.unshift(newResult);
     writeDB(db);
 
+    await recordAuditLog({ req, action: 'SUBMIT_EXAM_MARKS', targetEntity: 'exam_results', targetRecordId: studentId, metadata: { subject, percentage, grade } });
     return res.json({ success: true, message: `Marks submitted! Percentage: ${percentage}%, Grade: ${grade}`, result: newResult });
   } catch (error) {
     next(error);

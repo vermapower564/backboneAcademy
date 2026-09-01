@@ -2,6 +2,7 @@ import express from 'express';
 import { readDB, writeDB } from '../db.js';
 import pool, { isTiDBConnected } from '../database.js';
 import { verifyRole } from '../middleware/authMiddleware.js';
+import { recordAuditLog } from '../middleware/auditLogger.js';
 
 const router = express.Router();
 
@@ -87,6 +88,8 @@ router.post('/students', verifyRole(['ADMIN', 'TEACHER']), async (req, res, next
         id: result.insertId, studentId, name, dob, gender, parentName, mobile, email, address, className, board, course, batch, admissionDate, status: 'ACTIVE'
       };
 
+      await recordAuditLog({ req, action: 'CREATE_STUDENT', targetEntity: 'students', targetRecordId: studentId, metadata: { name, className, mobile } });
+
       return res.json({ success: true, message: 'Student enrolled successfully!', student: newStudent });
     }
 
@@ -97,6 +100,8 @@ router.post('/students', verifyRole(['ADMIN', 'TEACHER']), async (req, res, next
 
     db.students.unshift(newStudent);
     writeDB(db);
+
+    await recordAuditLog({ req, action: 'CREATE_STUDENT', targetEntity: 'students', targetRecordId: studentId, metadata: { name, className, mobile } });
 
     return res.json({ success: true, message: 'Student enrolled successfully!', student: newStudent });
   } catch (error) {
@@ -115,6 +120,7 @@ router.put('/students/:id', verifyRole(['ADMIN']), async (req, res, next) => {
         `UPDATE students SET name=?, parentName=?, mobile=?, email=?, className=?, board=?, course=?, status=? WHERE id=?`,
         [name, parentName, mobile, email, className, board, course, status, id]
       );
+      await recordAuditLog({ req, action: 'UPDATE_STUDENT', targetEntity: 'students', targetRecordId: id, metadata: { name, status } });
       return res.json({ success: true, message: 'Student details updated successfully!' });
     }
 
@@ -124,6 +130,7 @@ router.put('/students/:id', verifyRole(['ADMIN']), async (req, res, next) => {
       db.students[index] = { ...db.students[index], name, parentName, mobile, email, className, board, course, status };
       writeDB(db);
     }
+    await recordAuditLog({ req, action: 'UPDATE_STUDENT', targetEntity: 'students', targetRecordId: id, metadata: { name, status } });
     return res.json({ success: true, message: 'Student details updated successfully!' });
   } catch (error) {
     next(error);
