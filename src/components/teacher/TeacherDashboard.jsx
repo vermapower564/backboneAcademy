@@ -116,6 +116,12 @@ export default function TeacherDashboard({ user }) {
               <select value={attClass} onChange={e => setAttClass(e.target.value)} className="search-input" style={{ height: '36px', fontSize: '0.82rem', background: 'var(--bg-secondary)' }}>
                 <option value="Class 10">Class 10</option>
                 <option value="Class 9">Class 9</option>
+                <option value="Class 8">Class 8</option>
+                <option value="ADCA">ADCA Computer</option>
+                <option value="DCA">DCA Computer</option>
+                <option value="DTP">DTP Graphic Design</option>
+                <option value="Tally Prime GST">Tally Prime GST</option>
+                <option value="Typing">Touch Typing</option>
               </select>
             </div>
           </div>
@@ -162,11 +168,16 @@ export default function TeacherDashboard({ user }) {
             </div>
 
             <div>
-              <label style={{ fontSize: '0.78rem', fontWeight: 700 }}>Target Class</label>
+              <label style={{ fontSize: '0.78rem', fontWeight: 700 }}>Target Class / Course</label>
               <select value={assignment.className} onChange={e => setAssignment({ ...assignment, className: e.target.value })} className="search-input" style={{ height: '36px', fontSize: '0.85rem', background: 'var(--bg-secondary)' }}>
                 <option value="Class 10">Class 10</option>
                 <option value="Class 9">Class 9</option>
-                <option value="ADCA Computer Diploma">ADCA Computer</option>
+                <option value="Class 8">Class 8</option>
+                <option value="ADCA">ADCA Computer</option>
+                <option value="DCA">DCA Computer</option>
+                <option value="DTP">DTP Graphic Design</option>
+                <option value="Tally Prime GST">Tally Prime GST</option>
+                <option value="Typing">Touch Typing</option>
               </select>
             </div>
 
