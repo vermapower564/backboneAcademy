@@ -275,7 +275,7 @@ export default function Hero({ onExploreClick, onLabClick, onOpenDemoModal, onOp
 
                 <a
                   href="#forgot"
-                  onClick={(e) => { e.preventDefault(); alert('Please contact Backbone Academy administration desk at +91 9304868696 to reset your password.'); }}
+                  onClick={(e) => { e.preventDefault(); onOpenAuth && onOpenAuth('FORGOT_1'); }}
                   style={{ color: 'var(--brand-gold)', fontWeight: 700, textDecoration: 'none' }}
                 >
                   Forgot Password?

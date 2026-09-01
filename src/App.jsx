@@ -40,8 +40,14 @@ export default function App() {
   // User & Modal states
   const [user, setUser] = useState(null);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const [authModalMode, setAuthModalMode] = useState('LOGIN');
   const [isDemoModalOpen, setIsDemoModalOpen] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+
+  const handleOpenAuth = (mode = 'LOGIN') => {
+    setAuthModalMode(typeof mode === 'string' ? mode : 'LOGIN');
+    setIsAuthOpen(true);
+  };
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -117,7 +123,7 @@ export default function App() {
         userXP={userXP} 
         streakDays={streakDays} 
         user={user}
-        onOpenAuth={() => setIsAuthOpen(true)}
+        onOpenAuth={handleOpenAuth}
         onLogout={handleLogout}
         onOpenDemoModal={() => setIsDemoModalOpen(true)}
         onOpenShareModal={() => setIsShareModalOpen(true)}
@@ -135,7 +141,7 @@ export default function App() {
               onOpenDemoModal={() => setIsDemoModalOpen(true)}
               onOpenShareModal={() => setIsShareModalOpen(true)}
               onLoginSuccess={handleLoginSuccess}
-              onOpenAuth={() => setIsAuthOpen(true)}
+              onOpenAuth={handleOpenAuth}
               user={user}
             />
 
@@ -243,6 +249,7 @@ export default function App() {
         isOpen={isAuthOpen} 
         onClose={() => setIsAuthOpen(false)} 
         onLoginSuccess={handleLoginSuccess} 
+        initialMode={authModalMode}
       />
 
       <DemoClassModal 

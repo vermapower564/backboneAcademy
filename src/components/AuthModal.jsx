@@ -1,10 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, Mail, Lock, User, LogIn, UserPlus, CheckCircle, AlertCircle, Phone, Eye, EyeOff, KeyRound, ArrowLeft, ShieldCheck } from 'lucide-react';
 
-export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
+export default function AuthModal({ isOpen, onClose, onLoginSuccess, initialMode = 'LOGIN' }) {
   // Modes: 'LOGIN', 'REGISTER', 'FORGOT_1' (Email), 'FORGOT_2' (OTP), 'FORGOT_3' (New Password)
-  const [modalMode, setModalMode] = useState('LOGIN');
+  const [modalMode, setModalMode] = useState(initialMode);
   const [role, setRole] = useState('STUDENT');
+
+  useEffect(() => {
+    if (isOpen) {
+      setModalMode(initialMode || 'LOGIN');
+      setErrorMsg('');
+      setSuccessMsg('');
+    }
+  }, [isOpen, initialMode]);
 
   // Form Fields
   const [email, setEmail] = useState('aarav@backbone.edu');
