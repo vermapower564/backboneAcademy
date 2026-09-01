@@ -91,6 +91,16 @@ export default function Navbar({ activeTab, setActiveTab, theme, toggleTheme, us
             </li>
             <li>
               <button 
+                className={`nav-link ${activeTab === 'certificates' ? 'active' : ''}`}
+                onClick={() => setActiveTab('certificates')}
+                style={{ color: activeTab === 'certificates' ? 'var(--brand-crimson)' : undefined }}
+              >
+                <Award size={17} color={activeTab === 'certificates' ? 'var(--brand-crimson)' : undefined} />
+                <span>Certificates</span>
+              </button>
+            </li>
+            <li>
+              <button 
                 className={`nav-link ${activeTab === 'reviews' ? 'active' : ''}`}
                 onClick={() => setActiveTab('reviews')}
               >

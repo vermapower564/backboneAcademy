@@ -598,22 +598,29 @@
   color: #1E293B;
   border-bottom: 2px solid #D32F2F;
   display: inline-block;
-  padding: 0 30px 4px;
-  margin: 16px 0;
+  padding: 0 20px 4px;
+  margin: 10px 0;
 }
 
-/* Print view optimization */
+/* Print Rules for Downloadable Certificate PDF */
 @media print {
   body * {
     visibility: hidden;
   }
-  .certificate-preview-box, .certificate-preview-box * {
+  #official-printable-certificate, #official-printable-certificate * {
     visibility: visible;
   }
-  .certificate-preview-box {
+  #official-printable-certificate {
     position: absolute;
     left: 0;
     top: 0;
-    width: 100%;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 30px !important;
+    box-shadow: none !important;
+    border: 6px double #E63946 !important;
+    background: #FFFFFF !important;
+    color: #0F172A !important;
   }
 }

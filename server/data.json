@@ -6,6 +6,13 @@
       "email": "student@backbone.edu",
       "password": "password123",
       "createdAt": "2026-08-04T05:28:40.812Z"
+    },
+    {
+      "id": 1788175153417,
+      "name": "Test Student",
+      "email": "teststudent@backbone.edu",
+      "password": "$2b$10$zNL9a/PARFMOPkG3uHCHVuEYes3OG8R5QetR6dNYlRfUYtrBLJj2.",
+      "createdAt": "2026-08-31T11:19:13.417Z"
     }
   ],
   "demoBookings": [
@@ -16,9 +23,25 @@
       "course": "Class 5th to 10th Academics",
       "timeSlot": "Morning (8:00 AM - 11:00 AM)",
       "bookedAt": "2026-08-04T05:28:40.813Z"
+    },
+    {
+      "id": 1788175153633,
+      "studentName": "Test Student",
+      "phone": "9876543210",
+      "course": "Navodaya Entrance Prep",
+      "timeSlot": "Evening (4:00 PM - 7:00 PM)",
+      "bookedAt": "2026-08-31T11:19:13.633Z"
     }
   ],
   "reviews": [
+    {
+      "id": 1788175153658,
+      "name": "Test Student",
+      "course": "Navodaya Prep",
+      "rating": 5,
+      "date": "Just now",
+      "comment": "Excellent coaching by Rahul Sir!"
+    },
     {
       "id": 1,
       "name": "Rohan Sharma",
@@ -44,5 +67,14 @@
       "comment": "The JNVST mock OMR tests and mental ability coaching at Backbone Academy helped me get selected!"
     }
   ],
-  "contacts": []
+  "contacts": [
+    {
+      "id": 1788175153669,
+      "name": "Parent Inquiry",
+      "email": "",
+      "phone": "9876543210",
+      "message": "Hello, I want to inquire about Class 9 batch fees.",
+      "receivedAt": "2026-08-31T11:19:13.669Z"
+    }
+  ]
 }

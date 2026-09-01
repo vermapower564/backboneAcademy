@@ -19,6 +19,7 @@ import AuthModal from './components/AuthModal';
 import WelcomePopUp from './components/WelcomePopUp';
 import FAQSection from './components/FAQSection';
 import StudentHallOfFame from './components/StudentHallOfFame';
+import StudentCertificatesFolder from './components/StudentCertificatesFolder';
 import Footer from './components/Footer';
 import { Gift, Bell, PhoneCall } from 'lucide-react';
 import './App.css';
@@ -185,8 +186,8 @@ export default function App() {
           />
         )}
 
-        {activeTab === 'certificate' && (
-          <CertificateGenerator />
+        {(activeTab === 'certificates' || activeTab === 'certificate') && (
+          <StudentCertificatesFolder />
         )}
 
         {activeTab === 'leaderboard' && (
