@@ -627,26 +627,93 @@ export default function AdminDashboard({ user }) {
         </div>
       )}
 
-      {/* TAB 7: Reports & CSV Export */}
+      {/* TAB 7: Reports & CSV Export Center */}
       {activeTab === 'reports' && (
         <div className="glass-panel" style={{ padding: '24px', borderRadius: '20px' }}>
-          <h3 style={{ fontSize: '1.2rem', fontWeight: 800, marginBottom: '16px' }}>Academy Reports & Export Center</h3>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px' }}>
-            <div className="glass-panel" style={{ padding: '20px', borderRadius: '14px' }}>
-              <h4 style={{ fontWeight: 800, marginBottom: '6px' }}>Student Roster Report</h4>
-              <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '14px' }}>Complete directory of all registered students and class enrolments.</p>
+          <div style={{ marginBottom: '20px' }}>
+            <h3 style={{ fontSize: '1.3rem', fontWeight: 800 }}>Academy Reports & Analytics Center</h3>
+            <p style={{ fontSize: '0.84rem', color: 'var(--text-secondary)', marginTop: '2px' }}>Generate, print, and export executive reports for administration and board audits.</p>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '18px' }}>
+            {/* 1. Student Roster */}
+            <div className="glass-panel" style={{ padding: '20px', borderRadius: '16px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+              <div>
+                <h4 style={{ fontWeight: 800, fontSize: '1.05rem', marginBottom: '6px' }}>Student Roster Report</h4>
+                <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '14px', lineHeight: 1.5 }}>
+                  Complete student directory filtered by class, board, contact, and enrollment date ({students.length} Total).
+                </p>
+              </div>
               <button className="btn-crimson" onClick={() => handleExportCSV('students')} style={{ width: '100%', justifyContent: 'center', fontSize: '0.82rem' }}>
-                <Download size={15} /> <span>Download Students CSV</span>
+                <Download size={15} /> <span>Export Students CSV</span>
               </button>
             </div>
 
-            <div className="glass-panel" style={{ padding: '20px', borderRadius: '14px' }}>
-              <h4 style={{ fontWeight: '800', marginBottom: '6px' }}>Fee Collection Report</h4>
-              <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '14px' }}>Comprehensive statement of paid, partial, and pending fee records.</p>
+            {/* 2. Fee Collection & Pending Balance */}
+            <div className="glass-panel" style={{ padding: '20px', borderRadius: '16px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+              <div>
+                <h4 style={{ fontWeight: 800, fontSize: '1.05rem', marginBottom: '6px' }}>Fee Collection & Pending Report</h4>
+                <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '14px', lineHeight: 1.5 }}>
+                  Statement of total agreed fees, paid fees (₹{summary.totalFeeCollected.toLocaleString()}), and pending balances (₹{summary.totalFeePending.toLocaleString()}).
+                </p>
+              </div>
               <button className="btn-crimson" onClick={() => handleExportCSV('fees')} style={{ width: '100%', justifyContent: 'center', fontSize: '0.82rem' }}>
-                <Download size={15} /> <span>Download Fees CSV</span>
+                <Download size={15} /> <span>Export Fees CSV</span>
               </button>
             </div>
+
+            {/* 3. Class-Wise Attendance */}
+            <div className="glass-panel" style={{ padding: '20px', borderRadius: '16px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+              <div>
+                <h4 style={{ fontWeight: 800, fontSize: '1.05rem', marginBottom: '6px' }}>Class Attendance Report</h4>
+                <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '14px', lineHeight: 1.5 }}>
+                  Daily and monthly class attendance logs, present/absent ratios, and marked-by audit trail ({attendance.length} Logs).
+                </p>
+              </div>
+              <button className="btn-crimson" onClick={() => handleExportCSV('attendance')} style={{ width: '100%', justifyContent: 'center', fontSize: '0.82rem' }}>
+                <Download size={15} /> <span>Export Attendance CSV</span>
+              </button>
+            </div>
+
+            {/* 4. Exam Performance & Grades */}
+            <div className="glass-panel" style={{ padding: '20px', borderRadius: '16px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+              <div>
+                <h4 style={{ fontWeight: 800, fontSize: '1.05rem', marginBottom: '6px' }}>Exam Performance Report</h4>
+                <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '14px', lineHeight: 1.5 }}>
+                  Subject scores, max marks, calculated percentages, and letter grade distributions ({examResults.length} Report Cards).
+                </p>
+              </div>
+              <button className="btn-crimson" onClick={() => handleExportCSV('exams')} style={{ width: '100%', justifyContent: 'center', fontSize: '0.82rem' }}>
+                <Download size={15} /> <span>Export Exam Results CSV</span>
+              </button>
+            </div>
+
+            {/* 5. Teacher Activity */}
+            <div className="glass-panel" style={{ padding: '20px', borderRadius: '16px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+              <div>
+                <h4 style={{ fontWeight: 800, fontSize: '1.05rem', marginBottom: '6px' }}>Teacher Activity Report</h4>
+                <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '14px', lineHeight: 1.5 }}>
+                  Faculty directory, assigned subject specializations, and target class allocations ({teachers.length} Faculty).
+                </p>
+              </div>
+              <button className="btn-outline" onClick={() => window.print()} style={{ width: '100%', justifyContent: 'center', fontSize: '0.82rem' }}>
+                <Printer size={15} /> <span>Print Faculty Report</span>
+              </button>
+            </div>
+
+            {/* 6. Assignments & Tasks */}
+            <div className="glass-panel" style={{ padding: '20px', borderRadius: '16px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+              <div>
+                <h4 style={{ fontWeight: 800, fontSize: '1.05rem', marginBottom: '6px' }}>Assignment & Activity Report</h4>
+                <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '14px', lineHeight: 1.5 }}>
+                  Homework published by class and subject with submission deadlines ({assignments.length} Tasks).
+                </p>
+              </div>
+              <button className="btn-outline" onClick={() => window.print()} style={{ width: '100%', justifyContent: 'center', fontSize: '0.82rem' }}>
+                <Printer size={15} /> <span>Print Assignment Report</span>
+              </button>
+            </div>
+
           </div>
         </div>
       )}
