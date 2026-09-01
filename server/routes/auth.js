@@ -16,7 +16,9 @@ function isBcryptHash(str) {
  * 🔐 POST /api/auth/register
  */
 router.post('/register', validateRegister, async (req, res, next) => {
-  const { name, email, password } = req.body;
+  const { name, email, password, role } = req.body;
+  const userRole = (role && ['ADMIN', 'TEACHER', 'STUDENT'].includes(role.toUpperCase())) ? role.toUpperCase() : 'STUDENT';
+  const studentId = userRole === 'STUDENT' ? `STU-2026-${Math.floor(100 + Math.random() * 900)}` : null;
 
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -28,8 +30,8 @@ router.post('/register', validateRegister, async (req, res, next) => {
       }
 
       const [result] = await pool.query(
-        'INSERT INTO users (name, email, password) VALUES (?, ?, ?)',
-        [name, email, hashedPassword]
+        'INSERT INTO users (name, email, password, role, studentId) VALUES (?, ?, ?, ?, ?)',
+        [name, email, hashedPassword, userRole, studentId]
       );
 
       // Async trigger welcome email
@@ -38,7 +40,7 @@ router.post('/register', validateRegister, async (req, res, next) => {
       return res.json({
         success: true,
         message: 'Account created successfully!',
-        user: { id: result.insertId, name, email }
+        user: { id: result.insertId, name, email, role: userRole, studentId }
       });
     }
 
@@ -55,6 +57,8 @@ router.post('/register', validateRegister, async (req, res, next) => {
       name,
       email,
       password: hashedPassword,
+      role: userRole,
+      studentId,
       createdAt: new Date().toISOString()
     };
 
@@ -67,7 +71,7 @@ router.post('/register', validateRegister, async (req, res, next) => {
     return res.json({
       success: true,
       message: 'Account created successfully!',
-      user: { id: newUser.id, name: newUser.name, email: newUser.email }
+      user: { id: newUser.id, name: newUser.name, email: newUser.email, role: newUser.role, studentId: newUser.studentId }
     });
   } catch (error) {
     next(error);
@@ -85,7 +89,7 @@ router.post('/login', validateLogin, async (req, res, next) => {
 
     if (isTiDBConnected) {
       const [users] = await pool.query(
-        'SELECT id, name, email, password FROM users WHERE LOWER(email) = LOWER(?)',
+        'SELECT id, name, email, password, role, studentId FROM users WHERE LOWER(email) = LOWER(?)',
         [email]
       );
       if (users.length > 0) {
@@ -134,7 +138,13 @@ router.post('/login', validateLogin, async (req, res, next) => {
     return res.json({
       success: true,
       message: `Welcome back, ${user.name}!`,
-      user: { id: user.id, name: user.name, email: user.email }
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role || 'STUDENT',
+        studentId: user.studentId || (user.email === 'aarav@backbone.edu' ? 'STU-2026-001' : null)
+      }
     });
   } catch (error) {
     next(error);

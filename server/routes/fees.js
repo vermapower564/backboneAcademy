@@ -5,16 +5,24 @@ import { verifyRole } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-// GET /api/fees - Get all fee records
+// GET /api/fees - Get fee records (Data Privacy Enforced)
 router.get('/fees', async (req, res, next) => {
   const { studentId, paymentStatus } = req.query;
+  const userRole = req.headers['x-user-role'] || 'STUDENT';
+  const reqStudentId = req.headers['x-student-id'] || studentId;
 
   try {
     if (isTiDBConnected) {
       let query = 'SELECT * FROM fees WHERE 1=1';
       const params = [];
-      if (studentId) { query += ' AND studentId = ?'; params.push(studentId); }
-      if (paymentStatus) { query += ' AND paymentStatus = ?'; params.push(paymentStatus); }
+
+      if (userRole === 'STUDENT' && reqStudentId) {
+        query += ' AND studentId = ?';
+        params.push(reqStudentId);
+      } else {
+        if (studentId) { query += ' AND studentId = ?'; params.push(studentId); }
+        if (paymentStatus) { query += ' AND paymentStatus = ?'; params.push(paymentStatus); }
+      }
 
       const [rows] = await pool.query(query, params);
       return res.json({ success: true, count: rows.length, fees: rows });
@@ -22,8 +30,13 @@ router.get('/fees', async (req, res, next) => {
 
     const db = readDB();
     let result = db.fees || [];
-    if (studentId) result = result.filter(f => f.studentId === studentId);
-    if (paymentStatus) result = result.filter(f => f.paymentStatus === paymentStatus);
+
+    if (userRole === 'STUDENT' && reqStudentId) {
+      result = result.filter(f => f.studentId === reqStudentId);
+    } else {
+      if (studentId) result = result.filter(f => f.studentId === studentId);
+      if (paymentStatus) result = result.filter(f => f.paymentStatus === paymentStatus);
+    }
 
     return res.json({ success: true, count: result.length, fees: result });
   } catch (error) {
@@ -31,7 +44,7 @@ router.get('/fees', async (req, res, next) => {
   }
 });
 
-// POST /api/fees/payment - Record fee payment
+// POST /api/fees/payment - Record fee payment (Admin Only)
 router.post('/fees/payment', verifyRole(['ADMIN']), async (req, res, next) => {
   const { feeId, amountPaid, paymentDate } = req.body;
   if (!feeId || !amountPaid) {

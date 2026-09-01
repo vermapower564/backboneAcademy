@@ -28,16 +28,24 @@ router.get('/exams', async (req, res, next) => {
   }
 });
 
-// GET /api/exams/results - Get exam results & report cards
+// GET /api/exams/results - Get exam results & report cards (Data Privacy Enforced)
 router.get('/exams/results', async (req, res, next) => {
   const { studentId, examId } = req.query;
+  const userRole = req.headers['x-user-role'] || 'STUDENT';
+  const reqStudentId = req.headers['x-student-id'] || studentId;
 
   try {
     if (isTiDBConnected) {
       let query = 'SELECT * FROM exam_results WHERE 1=1';
       const params = [];
-      if (studentId) { query += ' AND studentId = ?'; params.push(studentId); }
-      if (examId) { query += ' AND examId = ?'; params.push(examId); }
+
+      if (userRole === 'STUDENT' && reqStudentId) {
+        query += ' AND studentId = ?';
+        params.push(reqStudentId);
+      } else {
+        if (studentId) { query += ' AND studentId = ?'; params.push(studentId); }
+        if (examId) { query += ' AND examId = ?'; params.push(examId); }
+      }
 
       const [rows] = await pool.query(query, params);
       return res.json({ success: true, count: rows.length, results: rows });
@@ -45,8 +53,13 @@ router.get('/exams/results', async (req, res, next) => {
 
     const db = readDB();
     let result = db.examResults || [];
-    if (studentId) result = result.filter(r => r.studentId === studentId);
-    if (examId) result = result.filter(r => String(r.examId) === String(examId));
+
+    if (userRole === 'STUDENT' && reqStudentId) {
+      result = result.filter(r => r.studentId === reqStudentId);
+    } else {
+      if (studentId) result = result.filter(r => r.studentId === studentId);
+      if (examId) result = result.filter(r => String(r.examId) === String(examId));
+    }
 
     return res.json({ success: true, count: result.length, results: result });
   } catch (error) {
@@ -54,7 +67,7 @@ router.get('/exams/results', async (req, res, next) => {
   }
 });
 
-// POST /api/exams/results - Submit marks for student
+// POST /api/exams/results - Submit marks for student (Admin & Teacher Only)
 router.post('/exams/results', verifyRole(['ADMIN', 'TEACHER']), async (req, res, next) => {
   const { examId, studentId, studentName, className, subject, marksObtained, maxMarks } = req.body;
   if (!studentId || marksObtained === undefined) {

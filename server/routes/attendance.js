@@ -5,17 +5,25 @@ import { verifyRole } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-// GET /api/attendance - Query attendance by date, class, or student
+// GET /api/attendance - Query attendance (Data Privacy Enforced)
 router.get('/attendance', async (req, res, next) => {
   const { date, className, studentId } = req.query;
+  const userRole = req.headers['x-user-role'] || 'STUDENT';
+  const reqStudentId = req.headers['x-student-id'] || studentId;
 
   try {
     if (isTiDBConnected) {
       let query = 'SELECT * FROM attendance WHERE 1=1';
       const params = [];
-      if (date) { query += ' AND date = ?'; params.push(date); }
-      if (className) { query += ' AND className = ?'; params.push(className); }
-      if (studentId) { query += ' AND studentId = ?'; params.push(studentId); }
+
+      if (userRole === 'STUDENT' && reqStudentId) {
+        query += ' AND studentId = ?';
+        params.push(reqStudentId);
+      } else {
+        if (date) { query += ' AND date = ?'; params.push(date); }
+        if (className) { query += ' AND className = ?'; params.push(className); }
+        if (studentId) { query += ' AND studentId = ?'; params.push(studentId); }
+      }
 
       const [rows] = await pool.query(query, params);
       return res.json({ success: true, count: rows.length, attendance: rows });
@@ -23,9 +31,14 @@ router.get('/attendance', async (req, res, next) => {
 
     const db = readDB();
     let result = db.attendance || [];
-    if (date) result = result.filter(a => a.date === date);
-    if (className) result = result.filter(a => a.className === className);
-    if (studentId) result = result.filter(a => a.studentId === studentId);
+
+    if (userRole === 'STUDENT' && reqStudentId) {
+      result = result.filter(a => a.studentId === reqStudentId);
+    } else {
+      if (date) result = result.filter(a => a.date === date);
+      if (className) result = result.filter(a => a.className === className);
+      if (studentId) result = result.filter(a => a.studentId === studentId);
+    }
 
     return res.json({ success: true, count: result.length, attendance: result });
   } catch (error) {
@@ -33,7 +46,7 @@ router.get('/attendance', async (req, res, next) => {
   }
 });
 
-// POST /api/attendance - Mark attendance for students on a given date
+// POST /api/attendance - Mark attendance (Admin & Teacher Only)
 router.post('/attendance', verifyRole(['ADMIN', 'TEACHER']), async (req, res, next) => {
   const { records, date, className, markedBy } = req.body;
   if (!Array.isArray(records) || !date || !className) {
@@ -43,7 +56,6 @@ router.post('/attendance', verifyRole(['ADMIN', 'TEACHER']), async (req, res, ne
   try {
     if (isTiDBConnected) {
       for (const rec of records) {
-        // Prevent duplicate attendance entry for same student & date
         await pool.query('DELETE FROM attendance WHERE studentId = ? AND date = ?', [rec.studentId, date]);
         await pool.query(
           'INSERT INTO attendance (studentId, className, date, status, markedBy) VALUES (?, ?, ?, ?, ?)',

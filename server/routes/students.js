@@ -5,21 +5,29 @@ import { verifyRole } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-// GET /api/students - List all students with search & filter
+// GET /api/students - List students (RBAC & Data Privacy enforced)
 router.get('/students', async (req, res, next) => {
   const { search, className, board, status } = req.query;
+  const userRole = req.headers['x-user-role'] || 'STUDENT';
+  const reqStudentId = req.headers['x-student-id'];
 
   try {
     if (isTiDBConnected) {
       let query = 'SELECT * FROM students WHERE 1=1';
       const params = [];
 
-      if (className) { query += ' AND className = ?'; params.push(className); }
-      if (board) { query += ' AND board = ?'; params.push(board); }
-      if (status) { query += ' AND status = ?'; params.push(status); }
-      if (search) {
-        query += ' AND (name LIKE ? OR studentId LIKE ? OR mobile LIKE ?)';
-        params.push(`%${search}%`, `%${search}%`, `%${search}%`);
+      // Enforce data privacy: Students can only query their own record
+      if (userRole === 'STUDENT' && reqStudentId) {
+        query += ' AND studentId = ?';
+        params.push(reqStudentId);
+      } else {
+        if (className) { query += ' AND className = ?'; params.push(className); }
+        if (board) { query += ' AND board = ?'; params.push(board); }
+        if (status) { query += ' AND status = ?'; params.push(status); }
+        if (search) {
+          query += ' AND (name LIKE ? OR studentId LIKE ? OR mobile LIKE ?)';
+          params.push(`%${search}%`, `%${search}%`, `%${search}%`);
+        }
       }
 
       query += ' ORDER BY id DESC';
@@ -30,16 +38,20 @@ router.get('/students', async (req, res, next) => {
     const db = readDB();
     let result = db.students || [];
 
-    if (className) result = result.filter(s => s.className === className);
-    if (board) result = result.filter(s => s.board === board);
-    if (status) result = result.filter(s => s.status === status);
-    if (search) {
-      const q = search.toLowerCase();
-      result = result.filter(s =>
-        s.name.toLowerCase().includes(q) ||
-        s.studentId.toLowerCase().includes(q) ||
-        s.mobile.includes(q)
-      );
+    if (userRole === 'STUDENT' && reqStudentId) {
+      result = result.filter(s => s.studentId === reqStudentId);
+    } else {
+      if (className) result = result.filter(s => s.className === className);
+      if (board) result = result.filter(s => s.board === board);
+      if (status) result = result.filter(s => s.status === status);
+      if (search) {
+        const q = search.toLowerCase();
+        result = result.filter(s =>
+          s.name.toLowerCase().includes(q) ||
+          s.studentId.toLowerCase().includes(q) ||
+          s.mobile.includes(q)
+        );
+      }
     }
 
     return res.json({ success: true, count: result.length, students: result });
@@ -48,7 +60,7 @@ router.get('/students', async (req, res, next) => {
   }
 });
 
-// POST /api/students - Add new student
+// POST /api/students - Add new student (Admin / Teacher only)
 router.post('/students', verifyRole(['ADMIN', 'TEACHER']), async (req, res, next) => {
   const { name, dob, gender, parentName, mobile, email, address, className, board, course, batch } = req.body;
 
@@ -88,7 +100,7 @@ router.post('/students', verifyRole(['ADMIN', 'TEACHER']), async (req, res, next
   }
 });
 
-// PUT /api/students/:id - Edit student
+// PUT /api/students/:id - Edit student (Admin only)
 router.put('/students/:id', verifyRole(['ADMIN']), async (req, res, next) => {
   const { id } = req.params;
   const { name, parentName, mobile, email, className, board, course, status } = req.body;
