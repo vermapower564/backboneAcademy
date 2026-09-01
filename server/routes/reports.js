@@ -62,18 +62,50 @@ router.get('/reports/summary', verifyRole(['ADMIN']), async (req, res, next) => 
 });
 
 /**
- * 📋 GET /api/reports/audit-logs - Administrative Audit Logs (Admin Only)
+ * 📋 GET /api/reports/audit-logs - Administrative Audit Logs with Filters (Admin Only)
  */
 router.get('/reports/audit-logs', verifyRole(['ADMIN']), async (req, res, next) => {
+  const { action, targetEntity, search } = req.query;
+
   try {
     if (isTiDBConnected) {
-      const [rows] = await pool.query('SELECT * FROM audit_logs ORDER BY id DESC LIMIT 100');
+      let query = 'SELECT * FROM audit_logs WHERE 1=1';
+      const params = [];
+
+      if (action) {
+        query += ' AND action = ?';
+        params.push(action);
+      }
+      if (targetEntity) {
+        query += ' AND targetEntity = ?';
+        params.push(targetEntity);
+      }
+      if (search) {
+        query += ' AND (action LIKE ? OR userName LIKE ? OR targetEntity LIKE ? OR metadata LIKE ?)';
+        params.push(`%${search}%`, `%${search}%`, `%${search}%`, `%${search}%`);
+      }
+
+      query += ' ORDER BY id DESC LIMIT 100';
+      const [rows] = await pool.query(query, params);
       return res.json({ success: true, count: rows.length, logs: rows });
     }
 
     const db = readDB();
-    const logs = (db.auditLogs || []).slice(0, 100);
-    return res.json({ success: true, count: logs.length, logs });
+    let logs = [...(db.auditLogs || [])];
+
+    if (action) logs = logs.filter(l => l.action === action);
+    if (targetEntity) logs = logs.filter(l => l.targetEntity === targetEntity);
+    if (search) {
+      const q = search.toLowerCase();
+      logs = logs.filter(l => 
+        (l.action || '').toLowerCase().includes(q) ||
+        (l.userName || '').toLowerCase().includes(q) ||
+        (l.targetEntity || '').toLowerCase().includes(q) ||
+        (l.metadata || '').toLowerCase().includes(q)
+      );
+    }
+
+    return res.json({ success: true, count: logs.length, logs: logs.slice(0, 100) });
   } catch (error) {
     next(error);
   }

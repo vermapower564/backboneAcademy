@@ -485,6 +485,17 @@
   ],
   "auditLogs": [
     {
+      "id": 1788257197620.2793,
+      "userId": 1,
+      "userName": "Director",
+      "userRole": "ADMIN",
+      "action": "CREATE_CALENDAR_EVENT",
+      "targetEntity": "calendar_events",
+      "targetRecordId": "1788257197615",
+      "metadata": "{\"title\":\"📜 Audit Test Event\",\"eventDate\":\"2026-11-01\",\"targetClass\":\"Class 10\"}",
+      "createdAt": "2026-09-01T10:06:37.620Z"
+    },
+    {
       "id": 1788256784896.001,
       "userId": 2,
       "userName": "Rahul Sir",
@@ -626,6 +637,19 @@
       "status": "PUBLISHED",
       "createdBy": "Director",
       "createdAt": "2026-09-01T09:56:54.396Z"
+    },
+    {
+      "id": 1788257197615,
+      "title": "📜 Audit Test Event",
+      "description": "",
+      "eventDate": "2026-11-01",
+      "startTime": "",
+      "endTime": "",
+      "eventType": "📌 Important Date",
+      "targetClass": "Class 10",
+      "status": "PUBLISHED",
+      "createdBy": "Director",
+      "createdAt": "2026-09-01T10:06:37.615Z"
     }
   ],
   "notifications": [
