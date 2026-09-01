@@ -204,7 +204,7 @@ export default function App() {
         {(activeTab === 'dashboard' || activeTab === 'portal') && (
           user ? (
             user.role === 'ADMIN' ? (
-              <AdminDashboard />
+              <AdminDashboard user={user} />
             ) : user.role === 'TEACHER' ? (
               <TeacherDashboard user={user} />
             ) : (

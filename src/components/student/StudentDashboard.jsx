@@ -31,17 +31,29 @@ export default function StudentDashboard({ user, onNavigate }) {
   const [results, setResults] = useState([]);
   const [showReceiptModal, setShowReceiptModal] = useState(false);
 
+  const getHeaders = (extraHeaders = {}) => {
+    const headers = { 'Content-Type': 'application/json', ...extraHeaders };
+    if (user?.token) {
+      headers['Authorization'] = `Bearer ${user.token}`;
+    } else {
+      headers['x-user-role'] = 'STUDENT';
+      if (user?.studentId) headers['x-student-id'] = user.studentId;
+    }
+    return headers;
+  };
+
   useEffect(() => {
     fetchStudentData();
-  }, []);
+  }, [user]);
 
   const fetchStudentData = async () => {
     try {
+      const headers = getHeaders();
       const [asRes, matRes, exRes, feeRes] = await Promise.all([
-        fetch('http://localhost:5000/api/assignments?className=Class 10').then(r => r.json()).catch(() => null),
-        fetch('http://localhost:5000/api/materials?className=Class 10').then(r => r.json()).catch(() => null),
-        fetch(`http://localhost:5000/api/exams/results?studentId=${studentInfo.studentId}`).then(r => r.json()).catch(() => null),
-        fetch(`http://localhost:5000/api/fees?studentId=${studentInfo.studentId}`).then(r => r.json()).catch(() => null)
+        fetch('http://localhost:5000/api/assignments?className=Class 10', { headers }).then(r => r.json()).catch(() => null),
+        fetch('http://localhost:5000/api/materials?className=Class 10', { headers }).then(r => r.json()).catch(() => null),
+        fetch(`http://localhost:5000/api/exams/results?studentId=${studentInfo.studentId}`, { headers }).then(r => r.json()).catch(() => null),
+        fetch(`http://localhost:5000/api/fees?studentId=${studentInfo.studentId}`, { headers }).then(r => r.json()).catch(() => null)
       ]);
 
       if (asRes?.assignments) setAssignments(asRes.assignments);

@@ -18,12 +18,22 @@ export default function TeacherDashboard({ user }) {
   const [assignment, setAssignment] = useState({ title: '', description: '', subject: 'Mathematics', className: 'Class 10', dueDate: '2026-09-10' });
   const [msg, setMsg] = useState('');
 
+  const getHeaders = (extraHeaders = {}) => {
+    const headers = { 'Content-Type': 'application/json', ...extraHeaders };
+    if (user?.token) {
+      headers['Authorization'] = `Bearer ${user.token}`;
+    } else {
+      headers['x-user-role'] = 'TEACHER';
+    }
+    return headers;
+  };
+
   useEffect(() => {
-    fetch('http://localhost:5000/api/students')
+    fetch('http://localhost:5000/api/students', { headers: getHeaders() })
       .then(r => r.json())
       .then(d => { if (d?.students) setStudents(d.students); })
       .catch(err => console.error(err));
-  }, []);
+  }, [user]);
 
   const handleMark = (studentId, status) => {
     setAttendanceLog(prev => ({ ...prev, [studentId]: status }));
@@ -36,7 +46,7 @@ export default function TeacherDashboard({ user }) {
     try {
       const res = await fetch('http://localhost:5000/api/attendance', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-user-role': 'TEACHER' },
+        headers: getHeaders(),
         body: JSON.stringify({ date: attDate, className: attClass, records, markedBy: teacherInfo.name })
       });
       const data = await res.json();
@@ -54,7 +64,7 @@ export default function TeacherDashboard({ user }) {
     try {
       const res = await fetch('http://localhost:5000/api/assignments', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-user-role': 'TEACHER' },
+        headers: getHeaders(),
         body: JSON.stringify({ ...assignment, createdBy: teacherInfo.name })
       });
       const data = await res.json();

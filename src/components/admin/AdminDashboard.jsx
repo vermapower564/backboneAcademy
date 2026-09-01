@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Users, GraduationCap, Calendar, DollarSign, BookOpen, Bell, FileText, Download, Plus, Search, Filter, CheckCircle2, AlertCircle, Printer, Eye, Edit, Trash2 } from 'lucide-react';
 
-export default function AdminDashboard() {
+export default function AdminDashboard({ user }) {
   const [activeTab, setActiveTab] = useState('overview');
   const [summary, setSummary] = useState({ totalStudents: 3, totalTeachers: 3, totalBookings: 1, totalFeeCollected: 23000, totalFeePending: 14000, activeCoursesCount: 12 });
   
@@ -37,22 +37,33 @@ export default function AdminDashboard() {
   const [attDate, setAttDate] = useState(new Date().toISOString().split('T')[0]);
   const [attClass, setAttClass] = useState('Class 10');
 
+  const getHeaders = (extraHeaders = {}) => {
+    const headers = { 'Content-Type': 'application/json', ...extraHeaders };
+    if (user?.token) {
+      headers['Authorization'] = `Bearer ${user.token}`;
+    } else {
+      headers['x-user-role'] = 'ADMIN';
+    }
+    return headers;
+  };
+
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [user]);
 
   const fetchData = async () => {
     try {
+      const headers = getHeaders();
       const [sumRes, stuRes, tchRes, feeRes, attRes, exRes, asRes, matRes, annRes] = await Promise.all([
-        fetch('http://localhost:5000/api/reports/summary', { headers: { 'x-user-role': 'ADMIN' } }).then(r => r.json()).catch(() => null),
-        fetch('http://localhost:5000/api/students').then(r => r.json()).catch(() => null),
-        fetch('http://localhost:5000/api/teachers').then(r => r.json()).catch(() => null),
-        fetch('http://localhost:5000/api/fees').then(r => r.json()).catch(() => null),
-        fetch('http://localhost:5000/api/attendance').then(r => r.json()).catch(() => null),
-        fetch('http://localhost:5000/api/exams/results').then(r => r.json()).catch(() => null),
-        fetch('http://localhost:5000/api/assignments').then(r => r.json()).catch(() => null),
-        fetch('http://localhost:5000/api/materials').then(r => r.json()).catch(() => null),
-        fetch('http://localhost:5000/api/announcements').then(r => r.json()).catch(() => null)
+        fetch('http://localhost:5000/api/reports/summary', { headers }).then(r => r.json()).catch(() => null),
+        fetch('http://localhost:5000/api/students', { headers }).then(r => r.json()).catch(() => null),
+        fetch('http://localhost:5000/api/teachers', { headers }).then(r => r.json()).catch(() => null),
+        fetch('http://localhost:5000/api/fees', { headers }).then(r => r.json()).catch(() => null),
+        fetch('http://localhost:5000/api/attendance', { headers }).then(r => r.json()).catch(() => null),
+        fetch('http://localhost:5000/api/exams/results', { headers }).then(r => r.json()).catch(() => null),
+        fetch('http://localhost:5000/api/assignments', { headers }).then(r => r.json()).catch(() => null),
+        fetch('http://localhost:5000/api/materials', { headers }).then(r => r.json()).catch(() => null),
+        fetch('http://localhost:5000/api/announcements', { headers }).then(r => r.json()).catch(() => null)
       ]);
 
       if (sumRes?.summary) setSummary(sumRes.summary);
@@ -75,7 +86,7 @@ export default function AdminDashboard() {
     try {
       const res = await fetch('http://localhost:5000/api/students', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-user-role': 'ADMIN' },
+        headers: getHeaders(),
         body: JSON.stringify(newStudent)
       });
       const data = await res.json();
@@ -95,7 +106,7 @@ export default function AdminDashboard() {
     try {
       const res = await fetch('http://localhost:5000/api/teachers', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-user-role': 'ADMIN' },
+        headers: getHeaders(),
         body: JSON.stringify(newTeacher)
       });
       const data = await res.json();
@@ -117,7 +128,7 @@ export default function AdminDashboard() {
     try {
       const res = await fetch('http://localhost:5000/api/fees/payment', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-user-role': 'ADMIN' },
+        headers: getHeaders(),
         body: JSON.stringify({ feeId: selectedFeeRecord.id, amountPaid: paymentAmount })
       });
       const data = await res.json();
@@ -136,7 +147,7 @@ export default function AdminDashboard() {
     try {
       await fetch('http://localhost:5000/api/attendance', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-user-role': 'ADMIN' },
+        headers: getHeaders(),
         body: JSON.stringify({
           date: attDate,
           className: attClass,
@@ -156,7 +167,7 @@ export default function AdminDashboard() {
     try {
       const res = await fetch('http://localhost:5000/api/exams/results', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-user-role': 'ADMIN' },
+        headers: getHeaders(),
         body: JSON.stringify(marksEntry)
       });
       const data = await res.json();
@@ -175,7 +186,7 @@ export default function AdminDashboard() {
     try {
       const res = await fetch('http://localhost:5000/api/announcements', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-user-role': 'ADMIN' },
+        headers: getHeaders(),
         body: JSON.stringify(newNotice)
       });
       const data = await res.json();
@@ -601,7 +612,7 @@ export default function AdminDashboard() {
             </div>
 
             <div className="glass-panel" style={{ padding: '20px', borderRadius: '14px' }}>
-              <h4 style={{ fontWeight: 800, marginBottom: '6px' }}>Fee Collection Report</h4>
+              <h4 style={{ fontWeight: '800', marginBottom: '6px' }}>Fee Collection Report</h4>
               <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '14px' }}>Comprehensive statement of paid, partial, and pending fee records.</p>
               <button className="btn-crimson" onClick={() => handleExportCSV('fees')} style={{ width: '100%', justifyContent: 'center', fontSize: '0.82rem' }}>
                 <Download size={15} /> <span>Download Fees CSV</span>
